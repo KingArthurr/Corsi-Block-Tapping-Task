@@ -17,7 +17,7 @@ col_blue = (0, 0, 250)
 col_yellow = (250, 250, 0)
 
 BACKGR_COL = col_gray
-SCREEN_SIZE = (700, 500)
+SCREEN_SIZE = (1000, 100)
 
 # Experiment
 
@@ -147,6 +147,7 @@ def draw_button(xpos, ypos, label, color):
 
 
 def draw_welcome():
+    pygame.draw.rect(screen, col_black, [100, 100, 100, 100])
     text_surface = font.render("STROOP Experiment", True, col_black, BACKGR_COL)
     text_rectangle = text_surface.get_rect()
     text_rectangle.center = (SCREEN_SIZE[0] / 2.0, 150)

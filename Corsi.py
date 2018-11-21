@@ -1,5 +1,7 @@
+from Game import Game
 
-''' This class will be used to initialize the game, handles all communication between objects
-    and will be used as the Controller.'''
 
-class Corsi:
+''' Contains main funtion for starting the program.'''
+
+game = Game();
+game.gameLoop()
