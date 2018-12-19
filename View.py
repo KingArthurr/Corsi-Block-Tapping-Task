@@ -1,6 +1,7 @@
 import pygame
 import sys
 from pygame.locals import *
+from time import time, ctime
 from pygame.compat import unichr_, unicode_
 
 ''' This class will be used to control the pygame UI and will be used as the Viewer'''
@@ -71,14 +72,35 @@ class View:
         self.screen.blit(text_surface, text_rectangle)
 
 
-    def draw_button(self, xpos, ypos, label, color):
-
-        text = self.font_small.render(label, True, color, self.BACKGR_COL)
-        text_rectangle = text.get_rect()
-        text_rectangle.center = (xpos, ypos)
-        self.screen.blit(text, text_rectangle)
-
-    def draw_trial(self, tiles, sequence):
-
+    def draw_trial(self, tiles, clickedseq):
         for tile in tiles:
             pygame.draw.rect(self.screen, self.col_black, (tile[0], tile[1], self.TILE_SIZE[0], self.TILE_SIZE[1]))
+
+        for click in clickedseq:
+            pygame.draw.rect(self.screen, self.col_yellow, (click[0], click[1], self.TILE_SIZE[0], self.TILE_SIZE[1]))
+
+
+
+    def draw_sequence(self, sequence):
+        for seq in sequence:
+            time_start = time()
+            pygame.draw.rect(self.screen, self.col_yellow, (seq[0], seq[1], self.TILE_SIZE[0], self.TILE_SIZE[1]))
+            self.updateDisplay();
+            bool = True
+            while bool:
+                if time() - time_start == 1:
+                    pygame.draw.rect(self.screen, self.col_black,
+                                     (seq[0], seq[1], self.TILE_SIZE[0], self.TILE_SIZE[1]))
+                    self.updateDisplay();
+                    bool = False
+
+    def draw_final(self, WMC = 0, avgTime = 1):
+        text_surface = self.font_small.render("You have a WMC of " + str(WMC) + "s", True, self.col_black, self.BACKGR_COL)
+        text_rectangle = text_surface.get_rect()
+        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0, 150)
+        self.screen.blit(text_surface, text_rectangle)
+
+        text_surface = self.font_small.render("Your average completion time is " + str(int(avgTime * 1000)) + "ms", True, self.col_black, self.BACKGR_COL)
+        text_rectangle = text_surface.get_rect()
+        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0, 300)
+        self.screen.blit(text_surface, text_rectangle)

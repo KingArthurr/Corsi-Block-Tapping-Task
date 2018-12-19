@@ -1,4 +1,5 @@
 import random
+import pygame
 import itertools
 
 ''' Class used for controlling the board.
@@ -16,33 +17,29 @@ class Board:
 
     def __init__(self, BOARD_SIZE, SEQUENCE_LENGTH, TILE_SIZE):
         self.tiles = list()
-
+        self.rects = list()
         while len(self.tiles) != SEQUENCE_LENGTH:
-            tile = self.getRandomCoordinate(BOARD_SIZE)
+            tile = self.getRandomCoordinate(BOARD_SIZE, TILE_SIZE)
             if self.noCollision(tile, self.tiles, BOARD_SIZE, TILE_SIZE):
                 self.tiles.append(tile)
+                self.rects.append(pygame.Rect(tile[0], tile[1], TILE_SIZE[0], TILE_SIZE[1]))
+
 
 
     def getCopy(self):
         return self.tiles
 
-    def getRandomCoordinate(self, BOARD_SIZE):
-        x = random.randint(0,BOARD_SIZE[0])
-        y = random.randint(0, BOARD_SIZE[1])
+    def getRandomCoordinate(self, BOARD_SIZE, TILE_SIZE):
+        x = random.randint(0+TILE_SIZE[0], BOARD_SIZE[0] - TILE_SIZE[0])
+        y = random.randint(0+TILE_SIZE[1], BOARD_SIZE[1] - TILE_SIZE[1])
         return (x, y)
 
     def noCollision(self, tile, tiles, BOARD_SIZE, TILE_SIZE):
-        #TODO
-        bool = True
+        new_tile = pygame.Rect(tile[0],tile[1], TILE_SIZE[0], TILE_SIZE[1])
+        return new_tile.collidelistall(self.rects) == []
 
-        x_range = range(tile[0] - (TILE_SIZE[0]/2), tile[0] + (TILE_SIZE[0]/2) + 1);
-        y_range = range(tile[1] - (TILE_SIZE[1] / 2), tile[1] + (TILE_SIZE[1] / 2) + 1);
-
-        print(x_range)
-        print(BOARD_SIZE[0])
-        tuples = list(itertools.product(x_range, y_range))
-
-        if any(x_range) < 0 or any(x_range) > BOARD_SIZE[0] or any(y_range) < 0 or any(y_range) > BOARD_SIZE[1]:
-            bool = False
-
-        return bool
+    def checkMouseClick(self, mouse_loc):
+        for rect in self.rects:
+            if rect.collidepoint(mouse_loc):
+                return rect
+        return None

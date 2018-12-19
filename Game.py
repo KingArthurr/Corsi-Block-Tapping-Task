@@ -7,9 +7,6 @@ from pygame.compat import unichr_, unicode_
 
 from View import View
 from Board import Board
-from Player import Player
-from Util import Util
-
 
 ''' This class is takes care of all the game logic and will be used as the Controller.  '''
 
@@ -25,12 +22,15 @@ class Game:
     SCREEN_SIZE = (1000, 800)
     BOARD_SIZE = (1000, 700)
     TILE_SIZE = (99, 99)
-    SEQUENCE_LENGTH = 9
+    SEQUENCE_LENGTH = 4
 
     board = None
-    player = None
 
     sequence = None
+    clickedseq = None
+    player_errors = 0
+    WMC = None
+    times = [1]
 
     pygame.init()
     pygame.display.set_mode(SCREEN_SIZE)
@@ -39,12 +39,16 @@ class Game:
     screen = pygame.display.get_surface()
     view = View(screen, SCREEN_SIZE, TILE_SIZE);
 
-    def initializeGame(self):
+    def initializeGame(self, CURRENT_SEQUENCELENGTH):
+        self.clickedseq = list()
+        self.player_errors = 0
         self.board = Board(self.BOARD_SIZE, self.SEQUENCE_LENGTH, self.TILE_SIZE);
-        self.player = Player();
+        self.createSequence(CURRENT_SEQUENCELENGTH)  # TODO unhardcode
+        self.view.draw_trial(self.board.getCopy(), self.clickedseq)
+        self.view.draw_sequence(self.getSequence())
 
     def createSequence(self, CURRENT_SEQUENCELENGTH):
-        i = CURRENT_SEQUENCELENGTH + 1;
+        i = CURRENT_SEQUENCELENGTH;
         tiles = self.board.getCopy();
 
         random.shuffle(tiles);
@@ -59,32 +63,43 @@ class Game:
 
     def gameLoop(self):
         STATE = "welcome"
+        CURRENT_SEQUENCELENGTH = 2
         while(True):
 
             self.view.refreshSurface();
-
-
-
-
 
             for event in pygame.event.get():
 
                 # interactive transitionals
                 if STATE == "welcome":
                     if event.type == KEYDOWN and event.key == K_SPACE:
-                        self.initializeGame()
-                        self.createSequence(CURRENT_SEQUENCELENGTH=1) #TODO unhardcode
+
+                        self.initializeGame(CURRENT_SEQUENCELENGTH)
+
                         STATE = "trial"
                         continue
 
                 if STATE == "trial":
+                    if self.clickedseq == self.sequence:
+                        print("You DID IT HOMIE")
+                        # TODO succes recording
+                        STATE = "feedback"
+                        CURRENT_SEQUENCELENGTH += 1 #TODO remove
+                        self.initializeGame(CURRENT_SEQUENCELENGTH) #TODO remove
+
+                    if pygame.mouse.get_pressed() == (1,0,0):
+                        mouse_loc = pygame.mouse.get_pos()
+                        clickedRect = self.board.checkMouseClick(mouse_loc)
+                        if clickedRect != None:
+                            if (clickedRect.left, clickedRect.top) == self.sequence[len(self.clickedseq)]:
+                                self.clickedseq.append((clickedRect.left, clickedRect.top))
+                            else:
+                                print('youremoron')
+                                self.player_errors += 1
+                                if self.player_errors > 1:
+                                    STATE = "final"
                     if event.type == KEYDOWN and event.key == K_SPACE: #TODO change to button
-
-                        #TODO remove placeholder
                         self.initializeGame()
-                        self.createSequence(CURRENT_SEQUENCELENGTH=1)  # TODO unhardcode
-
-
                         STATE = "trial"
                         continue
 
@@ -96,9 +111,12 @@ class Game:
             if STATE == "welcome":
                 self.view.draw_welcome()
 
-
             if STATE == "trial":
-                self.view.draw_trial(self.board.getCopy(), self.getSequence())
+                self.view.draw_trial(self.board.getCopy(), self.clickedseq)
+
+
+            if STATE == "final":
+                self.view.draw_final(self.WMC, sum(self.times)/len(self.times))
 
             if STATE == "quit":
                 pygame.quit()
