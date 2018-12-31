@@ -22,15 +22,17 @@ class Game:
     SCREEN_SIZE = (1000, 800)
     BOARD_SIZE = (1000, 700)
     TILE_SIZE = (99, 99)
-    SEQUENCE_LENGTH = 4
+    SEQUENCE_LENGTH = 9
 
     board = None
-
+    correct_seq = None
     sequence = None
     clickedseq = None
     player_errors = 0
     WMC = None
     times = [1]
+    time_trial = None
+    time_start = None
 
     pygame.init()
     pygame.display.set_mode(SCREEN_SIZE)
@@ -43,9 +45,10 @@ class Game:
         self.clickedseq = list()
         self.player_errors = 0
         self.board = Board(self.BOARD_SIZE, self.SEQUENCE_LENGTH, self.TILE_SIZE);
-        self.createSequence(CURRENT_SEQUENCELENGTH)  # TODO unhardcode
+        self.createSequence(CURRENT_SEQUENCELENGTH)  
         self.view.draw_trial(self.board.getCopy(), self.clickedseq)
         self.view.draw_sequence(self.getSequence())
+        self.correct_seq = False
 
     def createSequence(self, CURRENT_SEQUENCELENGTH):
         i = CURRENT_SEQUENCELENGTH;
@@ -75,18 +78,12 @@ class Game:
                     if event.type == KEYDOWN and event.key == K_SPACE:
 
                         self.initializeGame(CURRENT_SEQUENCELENGTH)
-
+                        self.time_start = time()
                         STATE = "trial"
                         continue
 
                 if STATE == "trial":
-                    if self.clickedseq == self.sequence:
-                        print("You DID IT HOMIE")
-                        # TODO succes recording
-                        STATE = "feedback"
-                        CURRENT_SEQUENCELENGTH += 1 #TODO remove
-                        self.initializeGame(CURRENT_SEQUENCELENGTH) #TODO remove
-
+                    
                     if pygame.mouse.get_pressed() == (1,0,0):
                         mouse_loc = pygame.mouse.get_pos()
                         clickedRect = self.board.checkMouseClick(mouse_loc)
@@ -97,12 +94,28 @@ class Game:
                                 print('youremoron')
                                 self.player_errors += 1
                                 if self.player_errors > 1:
-                                    STATE = "final"
-                    if event.type == KEYDOWN and event.key == K_SPACE: #TODO change to button
-                        self.initializeGame()
-                        STATE = "trial"
+                                    STATE = "feedback"
+                    if self.clickedseq == self.sequence:
+                            print("You DID IT HOMIE")
+                            self.correct_seq = True
+                            CURRENT_SEQUENCELENGTH += 1
+                            self.time_trial = time() - self.time_start
+                            STATE = "feedback"
+        
+                    
+                        
+                if STATE == "feedback":
+                    if event.type == KEYDOWN and event.key == K_SPACE:#TODO change to button
+                        if CURRENT_SEQUENCELENGTH <= self.SEQUENCE_LENGTH:
+                            self.initializeGame(CURRENT_SEQUENCELENGTH)
+                            self.time_start = time()
+                            STATE = "trial"
+                        else: 
+                            STATE = "final"
                         continue
-
+                if STATE == "final":
+                     if event.type == KEYDOWN and event.key == K_SPACE:#TODO change to button
+                        STATE = "quit"
                 if event.type == QUIT:
                     STATE = "quit"
                     break
@@ -113,6 +126,9 @@ class Game:
 
             if STATE == "trial":
                 self.view.draw_trial(self.board.getCopy(), self.clickedseq)
+            
+            if STATE == "feedback":
+                self.view.draw_feedback(self.time_trial, self.correct_seq)
 
 
             if STATE == "final":

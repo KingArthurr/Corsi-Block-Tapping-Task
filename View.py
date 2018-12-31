@@ -37,7 +37,7 @@ class View:
             "blue": K_e,
             "black": K_r}
 
-    BACKGR_COL = col_gray
+    BACKGR_COL = col_white
 
     screen = None
     font = None
@@ -93,6 +93,21 @@ class View:
                                      (seq[0], seq[1], self.TILE_SIZE[0], self.TILE_SIZE[1]))
                     self.updateDisplay();
                     bool = False
+    def draw_feedback (self, time, correct):
+        if correct == True:
+            text_surface = self.font_small.render ("You had the correct sequence of blocks", True, self.col_black, self.BACKGR_COL)
+        elif correct == False:
+            text_surface = self.font_small.render ("You had an incorrect sequence of blocks", True, self.col_black, self.BACKGR_COL)
+        
+        
+        text_rectangle = text_surface.get_rect()
+        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0, 150)
+        self.screen.blit(text_surface, text_rectangle)
+
+        text_surface = self.font_small.render ("Your time was: " + str(time) + " seconds", True, self.col_black, self.BACKGR_COL)
+        text_rectangle = text_surface.get_rect()
+        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0, 300)
+        self.screen.blit(text_surface, text_rectangle)
 
     def draw_final(self, WMC = 0, avgTime = 1):
         text_surface = self.font_small.render("You have a WMC of " + str(WMC) + "s", True, self.col_black, self.BACKGR_COL)
