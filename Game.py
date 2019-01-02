@@ -43,7 +43,6 @@ class Game:
 
     def initializeGame(self, CURRENT_SEQUENCELENGTH):
         self.clickedseq = list()
-        self.player_errors = 0
         self.board = Board(self.BOARD_SIZE, self.SEQUENCE_LENGTH, self.TILE_SIZE);
         self.createSequence(CURRENT_SEQUENCELENGTH)  
         self.view.draw_trial(self.board.getCopy(), self.clickedseq)
@@ -98,7 +97,6 @@ class Game:
                         continue
 
                 if STATE == "trial":
-                    
                     if pygame.mouse.get_pressed() == (1,0,0):
                         mouse_loc = pygame.mouse.get_pos()
                         clickedRect = self.board.checkMouseClick(mouse_loc)
@@ -106,16 +104,21 @@ class Game:
                             if (clickedRect.left, clickedRect.top) == self.sequence[len(self.clickedseq)]:
                                 self.clickedseq.append((clickedRect.left, clickedRect.top))
                             else:
-                                print('youremoron')
                                 self.player_errors += 1
                                 if self.player_errors > 1:
-                                    self.time_trial = time() - self.time_start
+                                    STATE = "final"
+                                    continue
+                                else:
                                     STATE = "feedback"
+                                    continue
+                                
                     if self.clickedseq == self.sequence:
                             print("You DID IT HOMIE")
                             self.correct_seq = True
                             CURRENT_SEQUENCELENGTH += 1
+                            self.player_errors = 0
                             self.time_trial = time() - self.time_start
+                            self.times.append(self.time_trial)
                             STATE = "feedback"
         
                     
@@ -151,7 +154,7 @@ class Game:
 
 
             if STATE == "final":
-                self.view.draw_final(self.WMC, sum(self.times)/len(self.times))
+                self.view.draw_final((CURRENT_SEQUENCELENGTH-1), sum(self.times)/len(self.times))
 
             if STATE == "quit":
                 pygame.display.quit()
