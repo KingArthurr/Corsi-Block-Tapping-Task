@@ -63,7 +63,19 @@ class Game:
 
     def getSequence(self):
         return self.sequence
+    
+    def button_pressed (self, msg, x, y, w, h):
+        clicked = False
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        print (click)
+        if x+w > mouse [0] > x and y+h > mouse[1] > y:
+            if click [0] == 1:
+               clicked = True
+        print (clicked)
+        return clicked
 
+ 
     def gameLoop(self):
         STATE = "welcome"
         CURRENT_SEQUENCELENGTH = 2
@@ -75,11 +87,14 @@ class Game:
 
                 # interactive transitionals
                 if STATE == "welcome":
-                    if event.type == KEYDOWN and event.key == K_SPACE:
-
+                    if self.button_pressed("Start", 200, 450, 150, 75):
                         self.initializeGame(CURRENT_SEQUENCELENGTH)
                         self.time_start = time()
                         STATE = "trial"
+                        continue
+                    if self.button_pressed("Quit", 600, 450, 150, 75):
+                        print ("quit")
+                        STATE = "quit"
                         continue
 
                 if STATE == "trial":
@@ -94,6 +109,7 @@ class Game:
                                 print('youremoron')
                                 self.player_errors += 1
                                 if self.player_errors > 1:
+                                    self.time_trial = time() - self.time_start
                                     STATE = "feedback"
                     if self.clickedseq == self.sequence:
                             print("You DID IT HOMIE")
@@ -105,21 +121,24 @@ class Game:
                     
                         
                 if STATE == "feedback":
-                    if event.type == KEYDOWN and event.key == K_SPACE:#TODO change to button
+                    if self.button_pressed('Next trial', 200, 450, 150, 75):                    
                         if CURRENT_SEQUENCELENGTH <= self.SEQUENCE_LENGTH:
                             self.initializeGame(CURRENT_SEQUENCELENGTH)
                             self.time_start = time()
                             STATE = "trial"
                         else: 
                             STATE = "final"
-                        continue
-                if STATE == "final":
-                     if event.type == KEYDOWN and event.key == K_SPACE:#TODO change to button
+                    if self.button_pressed('Quit', 600, 450, 150, 75):
                         STATE = "quit"
-                if event.type == QUIT:
-                    STATE = "quit"
-                    break
-
+                        
+                if STATE == "final":
+                     if self.button_pressed('Quit', 400, 450, 200, 100):#TODO change to button
+                        STATE = "quit"
+                
+                
+                #if event.type == pygame.QUIT:
+                #    STATE = "quit"
+                
                 # Presentitionals
             if STATE == "welcome":
                 self.view.draw_welcome()
@@ -135,6 +154,7 @@ class Game:
                 self.view.draw_final(self.WMC, sum(self.times)/len(self.times))
 
             if STATE == "quit":
+                pygame.display.quit()
                 pygame.quit()
                 sys.exit()
 
