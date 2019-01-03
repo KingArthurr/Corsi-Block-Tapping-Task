@@ -2,6 +2,7 @@ import pygame
 import sys
 from time import time
 import random
+import numpy
 from pygame.locals import *
 from pygame.compat import unichr_, unicode_
 
@@ -30,9 +31,10 @@ class Game:
     clickedseq = None
     player_errors = 0
     WMC = None
-    times = [1]
+    times = []
     time_trial = None
     time_start = None
+    SeqLength_Times_List = []
 
     pygame.init()
     pygame.display.set_mode(SCREEN_SIZE)
@@ -67,13 +69,24 @@ class Game:
         clicked = False
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        print (click)
         if x+w > mouse [0] > x and y+h > mouse[1] > y:
             if click [0] == 1:
                clicked = True
-        print (clicked)
         return clicked
-
+    
+    def saveResults (self, results):
+        filename = "CorsiBlockTapping.csv"
+        myarray = numpy.asarray(results)
+        numpy.savetxt(filename, myarray, delimiter = ',')
+    
+    def avg (self, a):
+        del a[0]
+        sumList = sum(a)
+        print (sumList)
+        print (len(a))
+        avg = 500
+        return avg
+    
  
     def gameLoop(self):
         STATE = "welcome"
@@ -92,7 +105,6 @@ class Game:
                         STATE = "trial"
                         continue
                     if self.button_pressed("Quit", 600, 450, 150, 75):
-                        print ("quit")
                         STATE = "quit"
                         continue
 
@@ -104,6 +116,9 @@ class Game:
                             if (clickedRect.left, clickedRect.top) == self.sequence[len(self.clickedseq)]:
                                 self.clickedseq.append((clickedRect.left, clickedRect.top))
                             else:
+                                self.time_trial = time() - self.time_start
+                                self.times.append(self.time_trial)
+                                self.SeqLength_Times_List.append((CURRENT_SEQUENCELENGTH-1, self.time_trial))
                                 self.player_errors += 1
                                 if self.player_errors > 1:
                                     STATE = "final"
@@ -113,12 +128,12 @@ class Game:
                                     continue
                                 
                     if self.clickedseq == self.sequence:
-                            print("You DID IT HOMIE")
                             self.correct_seq = True
                             CURRENT_SEQUENCELENGTH += 1
                             self.player_errors = 0
                             self.time_trial = time() - self.time_start
                             self.times.append(self.time_trial)
+                            self.SeqLength_Times_List.append((CURRENT_SEQUENCELENGTH-1, self.time_trial))
                             STATE = "feedback"
         
                     
@@ -132,10 +147,11 @@ class Game:
                         else: 
                             STATE = "final"
                     if self.button_pressed('Quit', 600, 450, 150, 75):
-                        STATE = "quit"
+                        STATE = "final"
                         
                 if STATE == "final":
-                     if self.button_pressed('Quit', 400, 450, 200, 100):#TODO change to button
+                    self.saveResults(self.SeqLength_Times_List)
+                    if self.button_pressed('Quit', 400, 450, 200, 100):
                         STATE = "quit"
                 
                 
@@ -154,8 +170,8 @@ class Game:
 
 
             if STATE == "final":
-                self.view.draw_final((CURRENT_SEQUENCELENGTH-1), sum(self.times)/len(self.times))
-
+                self.view.draw_final((CURRENT_SEQUENCELENGTH-1), (sum(self.times)/len(self.times)))
+                
             if STATE == "quit":
                 pygame.display.quit()
                 pygame.quit()

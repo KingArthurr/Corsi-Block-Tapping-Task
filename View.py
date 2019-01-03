@@ -128,7 +128,7 @@ class View:
         text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0, 150)
         self.screen.blit(text_surface, text_rectangle)
 
-        text_surface = self.font_small.render("Your average completion time is " + str(int(avgTime * 1000)) + "seconds", True, self.col_darkblue, self.BACKGR_COL)
+        text_surface = self.font_small.render("Your average completion time is " + str(int(avgTime * 1000)) + " ms", True, self.col_darkblue, self.BACKGR_COL)
         text_rectangle = text_surface.get_rect()
         text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0, 300)
         self.screen.blit(text_surface, text_rectangle)
