@@ -1,24 +1,26 @@
-import pygame
+import random
 import sys
 from time import time
-import random
-import numpy
 
-from View import View
+import numpy
+import pygame
+
 from Board import Board
+from View import View
 
 """ This class is takes care of all the game logic and will be used as the Controller.  """
 
 
 class Game:
     """Initialize game settings"""
+    # TODO SET GAME PARAMETERS
     SCREEN_SIZE = (1000, 800)
-    BOARD_SIZE = (1000, 700)
-    TILE_SIZE = (99, 99)
     SEQUENCE_LENGTH = 9
     ALLOWED_ERRORS = 1
 
-    """Initialize needed global variables"""
+    TILE_SIZE = (min(SCREEN_SIZE) / SEQUENCE_LENGTH - 1, min(SCREEN_SIZE) / SEQUENCE_LENGTH - 1)
+
+    """Initialize global variables"""
     board = None
     correct_seq = None
     sequence = None
@@ -31,14 +33,17 @@ class Game:
     SeqLength_Times_List = []
     view = None
 
-    """Create PyGame screen and initialize View.py to control the screen"""
+    """Initialise Game()"""
 
     def __init__(self):
+        """Create PyGame screen"""
         pygame.init()
         pygame.display.set_mode(self.SCREEN_SIZE)
         pygame.display.set_caption("Corsi Block Tapping Task")
 
         screen = pygame.display.get_surface()
+
+        """Initialise View.py to control the screen"""
         self.view = View(screen, self.SCREEN_SIZE, self.TILE_SIZE)
 
     """initialize Trial of length of current sequence"""
@@ -47,7 +52,7 @@ class Game:
         """"Clean clickedseq by assigning new clean list()"""
         self.clickedseq = list()
         """Clean board by creating new Board()"""
-        self.board = Board(self.BOARD_SIZE, self.SEQUENCE_LENGTH, self.TILE_SIZE)
+        self.board = Board(self.SCREEN_SIZE, self.SEQUENCE_LENGTH, self.TILE_SIZE)
         """Create a new sequence of length of current sequence"""
         self.createSequence(CURRENT_SEQUENCELENGTH)
         """Tell View.py to draw the trial and show the sequence"""
@@ -112,7 +117,7 @@ class Game:
 
         """Start main game loop"""
         while True:
-            
+
             """Clean screen from previous loop"""
             self.view.refreshSurface()
 
@@ -124,7 +129,9 @@ class Game:
                 """If in welcome state"""
                 if STATE == "welcome":
                     """If start trial button is pressed"""
-                    if self.button_pressed(200, 450, 150, 75):
+                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                    if self.button_pressed(self.SCREEN_SIZE[0] / 3 - (150 / 2), self.SCREEN_SIZE[1] * 3 / 5 - (75 / 2),
+                                           150, 75):
                         """Initialize new trial with CURRENT_SEQUENCELENGTH"""
                         self.initializeTrial(CURRENT_SEQUENCELENGTH)
                         """Set starttime of current trial to current time"""
@@ -134,7 +141,10 @@ class Game:
                         """Go to next event in event list"""
                         continue
                     """If quit button is pressed"""
-                    if self.button_pressed(600, 450, 150, 75):
+                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                    if self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),
+                                           self.SCREEN_SIZE[1] * 3 / 5 - (75 / 2), 150,
+                                           75):
                         """Set STATE to quit"""
                         STATE = "quit"
                         """Go to next event in event list"""
@@ -183,12 +193,14 @@ class Game:
                         """Set STATE to feedback"""
                         STATE = "feedback"
                         """Go to the next event in event list"""
-                        # TODO CHECK IF CONTINUE IS NEEDED
                         continue
                 """If in feedback state"""
                 if STATE == "feedback":
                     """If next trial button is pressed and player has not made more than one error"""
-                    if self.button_pressed(200, 450, 150, 75) and self.player_errors <= self.ALLOWED_ERRORS:
+                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),
+                                           self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2), 150,
+                                           75) and self.player_errors <= self.ALLOWED_ERRORS:
                         """If not all trials have been completed"""
                         if CURRENT_SEQUENCELENGTH <= self.SEQUENCE_LENGTH:
                             """Initialize new trial with CURRENT_SEQUENCELENGTH"""
@@ -198,39 +210,42 @@ class Game:
                             """Set STATE to trial"""
                             STATE = "trial"
                             """Go to the next event in event list"""
-                            # TODO CHECK IF CONTINUE IS NEEDED
                             continue
                             """If all trials have been completed"""
                         else:
                             """Set STATE to final"""
                             STATE = "final"
                             """Go to the next event in event list"""
-                            # TODO CHECK IF CONTINUE IS NEEDED
                             continue
                     """If quit button is pressed"""
-                    if self.button_pressed(600, 450, 150, 75):
+                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                    if (self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),
+                                            self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2), 150,
+                                            75) and self.player_errors <= self.ALLOWED_ERRORS) or (
+                            self.button_pressed(self.SCREEN_SIZE[0] / 2 - (200 / 2),
+                                                self.SCREEN_SIZE[1] * 4 / 5 - (100 / 2),
+                                                200, 100) and self.player_errors > self.ALLOWED_ERRORS):
                         """Set STATE to final"""
                         STATE = "final"
                         """Go to the next event in event list"""
-                        # TODO CHECK IF CONTINUE IS NEEDED
                         continue
                 """If in final state"""
                 if STATE == "final":
                     """Save the results of the Game to CSV file"""
                     self.saveResults(self.SeqLength_Times_List)
                     """If quit button is pressed"""
-                    if self.button_pressed(400, 450, 200, 100):
+                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                    if self.button_pressed(self.SCREEN_SIZE[0] / 2 - (150 / 2), self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2),
+                                           200, 100):
                         """Set STATE to quit"""
                         STATE = "quit"
                         """Go to the next event in event list"""
-                        # TODO CHECK IF CONTINUE IS NEEDED
                         continue
                 """If exit system button is clicked"""
                 if event.type == pygame.QUIT:
                     """Set STATE to quit"""
                     STATE = "quit"
                     """Go to the next event in event list"""
-                    # TODO CHECK IF CONTINUE IS NEEDED
                     continue
             """End of for loop"""
 
@@ -238,7 +253,7 @@ class Game:
 
             """If in welcome state"""
             if STATE == "welcome":
-                """Tell View.py to draw welcome screen"""
+                """Tell View.py to draw the welcome screen"""
                 self.view.draw_welcome()
 
             """If in trial state"""
@@ -248,12 +263,12 @@ class Game:
 
             """If in feedback state"""
             if STATE == "feedback":
-                """Tell View.py to draw feedback screen with trial time and if clicked sequence was correct"""
+                """Tell View.py to draw the feedback screen with trial time and if clicked sequence was correct"""
                 self.view.draw_feedback(self.time_trial, self.correct_seq, self.player_errors > self.ALLOWED_ERRORS)
 
             """If in final state"""
             if STATE == "final":
-                """Tell View.py to draw final screen with WMC and average trial time"""
+                """Tell View.py to draw the final screen with WMC and average trial time"""
                 self.view.draw_final((CURRENT_SEQUENCELENGTH - 1), (sum(self.times) / len(self.times)))
             """If in quite state"""
             if STATE == "quit":

@@ -1,6 +1,8 @@
 from Game import Game
 
-''' Contains main funtion for starting the program.'''
+""" Contains main funtion for starting the program."""
 
-game = Game();
+"""Init Game instance"""
+game = Game()
+"""Start main game loop"""
 game.gameLoop()
