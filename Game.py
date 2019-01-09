@@ -1,8 +1,9 @@
+import datetime
 import random
 import sys
 from time import time
 
-import numpy
+import pandas
 import pygame
 
 from Board import Board
@@ -109,9 +110,9 @@ class Game:
 
     # TODO IMRPOVE
     def saveResults(self, results):
-        filename = "CorsiBlockTapping.csv"
-        myarray = numpy.asarray(results)
-        numpy.savetxt(filename, myarray, delimiter=',')
+        df = pandas.DataFrame(self.SeqLength_Times_List)
+        filename = "CorsiBlockTapping" + datetime.datetime.now + ".csv"
+        df.to_csv(filename, sep='\t', encoding='utf-8', index=False)
 
     """Main game loop to handle game logic"""
 
@@ -186,7 +187,8 @@ class Game:
                                 self.times.append(self.time_trial)
 
                                 """Add 2-tuple of WMC and trial time to seqLength_Times_List"""
-                                self.SeqLength_Times_List.append((CURRENT_SEQUENCELENGTH - 1, self.time_trial))
+                                self.SeqLength_Times_List.append({'Sequence length': CURRENT_SEQUENCELENGTH - 1,
+                                                                  'Trial time': self.time_trial})
 
                                 """Add 1 to amount of errors made"""
                                 self.player_errors += 1
@@ -315,8 +317,11 @@ class Game:
 
             """If in final state"""
             if STATE == "final":
+                df = pandas.DataFrame(self.SeqLength_Times_List)
+
                 """Tell View.py to draw the final screen with WMC and average trial time"""
                 self.view.draw_final((CURRENT_SEQUENCELENGTH - 1), (sum(self.times) / len(self.times)))
+
             """If in quite state"""
             if STATE == "quit":
                 """Close screen"""

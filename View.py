@@ -63,6 +63,14 @@ class View:
 
     """Draw the trial with given board and clicked sequence"""
     def draw_trial(self, tiles, clickedseq):
+        """Draw instructions"""
+        text_surface = self.font_small.render("Click on the tiles in order of the shown sequence",
+                                              True,
+                                              self.col_darkblue, self.BACKGR_COL)
+        text_rectangle = text_surface.get_rect()
+        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0, self.SCREEN_SIZE[1] * 19 / 20)
+        self.screen.blit(text_surface, text_rectangle)
+
         """For each tile in tiles list do:"""
         for tile in tiles:
             """Draw tile on screen"""
@@ -74,9 +82,18 @@ class View:
             """Draw tile on screen with different colour, overriding old tile"""
             pygame.draw.rect(self.screen, self.col_yellow,
                              (click[0], click[1], self.TILE_SIZE[0], self.TILE_SIZE[1]))
+        self.updateDisplay()
 
     """Show the given sequence"""
     def draw_sequence(self, sequence):
+        """Check if this is the first sequence of the game"""
+        if len(sequence) <= 2:
+            """Set timer to allow player to read instructions before showing the sequence"""
+            time_start = time()
+            while True:
+                if time() - time_start > 5:
+                    break
+
         """For each tile in sequence list do:"""
         for seq in sequence:
             """Set time_start to the current time"""
