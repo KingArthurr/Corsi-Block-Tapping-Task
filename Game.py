@@ -95,8 +95,6 @@ class Game:
 
             self.view.refreshSurface();
 
-            for event in pygame.event.get():
-
                 # interactive transitionals
                 if STATE == "welcome":
                     if self.button_pressed("Start", 200, 450, 150, 75):
