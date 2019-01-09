@@ -22,7 +22,6 @@ class View:
     font_small = None
 
     """Initialise View()"""
-
     def __init__(self, screen, SCREEN_SIZE, TILE_SIZE):
         """Set screen, SCREEN_SIZE and TILE_SIZE as given"""
         self.screen = screen
@@ -37,7 +36,6 @@ class View:
         self.font_small = pygame.font.Font(None, 40)
 
     """Draw the welcome screen"""
-
     def draw_welcome(self):
         """Draw welcome screen title"""
         text_surface = self.font.render("Corsi Block Tapping Task", True, self.col_darkblue, self.BACKGR_COL)
@@ -55,7 +53,6 @@ class View:
                          75, self.col_red, self.col_bright_red)
 
     """Draw the trial with given board and clicked sequence"""
-
     def draw_trial(self, tiles, clickedseq):
         """For each tile in tiles list do:"""
         for tile in tiles:
@@ -67,7 +64,6 @@ class View:
             pygame.draw.rect(self.screen, self.col_yellow, (click[0], click[1], self.TILE_SIZE[0], self.TILE_SIZE[1]))
 
     """Show the given sequence"""
-
     def draw_sequence(self, sequence):
         """For each tile in sequence list do:"""
         for seq in sequence:
@@ -90,7 +86,6 @@ class View:
                     break
 
     """Draw the feedback screen with trial time and if clicked sequence was correct"""
-
     def draw_feedback(self, time, correct, errors_reached):
         """If player completed the sequence"""
         if correct:
@@ -141,7 +136,6 @@ class View:
                              75, self.col_red, self.col_bright_red)
 
     """Draw the final screen with WMC and average trial time"""
-
     def draw_final(self, WMC=0, avgTime=1):
         """Draw WMC score"""
         text_surface = self.font_small.render("You have a WMC of " + str(WMC), True, self.col_darkblue, self.BACKGR_COL)
@@ -160,7 +154,8 @@ class View:
         # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
         self.draw_button("Quit", self.SCREEN_SIZE[0] / 2 - (150 / 2), self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2), 200, 100,
                          self.col_red, self.col_bright_red)
-
+    
+    """Draws a button""" 
     def draw_button(self, msg, x, y, w, h, ic, ac):
         """Get current mouse position"""
         mouse = pygame.mouse.get_pos()
@@ -183,11 +178,9 @@ class View:
         self.screen.blit(text_surface, text_rectangle)
 
     """Clean screen by filling with BACKGR_COL"""
-
     def refreshSurface(self):
         self.screen.fill(self.BACKGR_COL)
 
     """Update pygame display"""
-
     def updateDisplay(self):
         pygame.display.update()
