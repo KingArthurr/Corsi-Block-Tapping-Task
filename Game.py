@@ -111,7 +111,7 @@ class Game:
     # TODO IMRPOVE
     def saveResults(self, results):
         df = pandas.DataFrame(self.SeqLength_Times_List)
-        filename = "CorsiBlockTapping" + datetime.datetime.now + ".csv"
+        filename = "CorsiBlockTapping" + datetime.datetime.now().strftime("%d%B%Y%I%M%p") + ".csv"
         df.to_csv(filename, sep='\t', encoding='utf-8', index=False)
 
     """Main game loop to handle game logic"""
