@@ -107,11 +107,13 @@ class Game:
         return clicked
 
     """Save the results of the Game to CSV file"""
-
-    # TODO IMRPOVE
+    
     def saveResults(self, results):
-        df = pandas.DataFrame(self.SeqLength_Times_List)
+        """Create a dataframe with the results"""
+        df = pandas.DataFrame(results)
+        """Define filename of CSV file"""
         filename = "CorsiBlockTapping" + datetime.datetime.now().strftime("%d%B%Y%I%M%p") + ".csv"
+        """Add dataframe to CSV file"""
         df.to_csv(filename, sep='\t', encoding='utf-8', index=False)
 
     """Main game loop to handle game logic"""
@@ -317,8 +319,6 @@ class Game:
 
             """If in final state"""
             if STATE == "final":
-                df = pandas.DataFrame(self.SeqLength_Times_List)
-
                 """Tell View.py to draw the final screen with WMC and average trial time"""
                 self.view.draw_final((CURRENT_SEQUENCELENGTH - 1), (sum(self.times) / len(self.times)))
 
@@ -326,7 +326,7 @@ class Game:
             if STATE == "quit":
                 """Close screen"""
                 pygame.display.quit()
-
+ 
                 """Exit pygame"""
                 pygame.quit()
 
