@@ -65,7 +65,6 @@ class Board:
 
     def checkMouseClick(self, mouse_loc):
         """Iterate over the list with rectangles"""
-        print(len(self.rects))
         for rect in self.rects:
             """Checks if mouse location is on a rectangle"""
             if rect.collidepoint(mouse_loc):
