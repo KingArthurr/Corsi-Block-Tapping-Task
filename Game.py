@@ -7,7 +7,10 @@ import pandas
 import pygame
 
 from Board import Board
+from InputBox import InputBox
 from View import View
+
+
 
 """ This class is takes care of all the game logic and will be used as the Controller.  """
 
@@ -32,8 +35,22 @@ class Game:
     times = []
     time_trial = None
     time_start = None
-    SeqLength_Times_List = []
-    view = None
+    resultsRaw = []
+    results = []
+
+    initials = None
+    age = 0
+    gender = None
+
+    startTime = None
+    endTime = None
+
+    # Setup input boxes TODO comment
+    inputID = InputBox(SCREEN_SIZE[0] * 4 / 7, SCREEN_SIZE[1] * 7 / 40, 200, 32)
+    inputAge = InputBox(SCREEN_SIZE[0] * 4 / 7, SCREEN_SIZE[1] * 11 / 40, 200, 32)
+    inputGender = InputBox(SCREEN_SIZE[0] * 4 / 7, SCREEN_SIZE[1] * 15 / 40, 200, 32)
+    input_boxes = [inputID, inputAge, inputGender]
+    spaceready = False
 
     """Initialise Game()"""
 
@@ -107,14 +124,38 @@ class Game:
         return clicked
 
     """Save the results of the Game to CSV file"""
-    
-    def saveResults(self, results):
-        """Create a dataframe with the results"""
-        df = pandas.DataFrame(results)
-        """Define filename of CSV file"""
-        filename = "CorsiBlockTapping" + datetime.datetime.now().strftime("%d%B%Y%I%M%p") + ".csv"
-        """Add dataframe to CSV file"""
-        df.to_csv(filename, sep='\t', encoding='utf-8', index=False)
+    # TODO IMRPOVE
+    def saveResults(self):
+        fileraw = "CorsiBlockTapping_results.csv"
+        df = pandas.DataFrame(self.results)
+        f = open(fileraw, "a")
+        if f.tell() == 0:
+            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, mode='a')
+        else:
+            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, header=False, mode='a')
+        f.close()
+
+        fileraw = "CorsiBlockTapping_raw.csv"
+        df = pandas.DataFrame(self.resultsRaw)
+        f = open(fileraw, "a")
+        if f.tell() == 0:
+            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, mode='a')
+        else:
+            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, header=False, mode='a')
+        f.close()
+
+    def checkInputCompleted(self):  # TODO fix
+        if self.inputID.getValue().isalpha():
+            self.initials = self.inputID.getValue()
+        if self.inputAge.getValue().isdigit():
+            self.age = int(self.inputAge.getValue())
+        if self.inputGender.getValue().lower() == 'f':
+            self.gender = "female"
+        if self.inputGender.getValue().lower() == 'm':
+            self.gender = "male"
+
+        # return True
+        return self.initials is not None and self.age != 0 and self.gender is not None
 
     """Main game loop to handle game logic"""
 
@@ -143,14 +184,8 @@ class Game:
                     if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),
                                            self.SCREEN_SIZE[1] * 3 / 5 - (75 / 2),
                                            150, 75):
-                        """Initialize new trial with CURRENT_SEQUENCELENGTH"""
-                        self.initializeTrial(CURRENT_SEQUENCELENGTH)
-
-                        """Set starttime of current trial to current time"""
-                        self.time_start = time()
-
                         """Set STATE to trial"""
-                        STATE = "trial"
+                        STATE = "Questions"
 
                         """Go to next event in event list"""
                         continue
@@ -159,6 +194,38 @@ class Game:
                     # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
                     if self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),
                                            self.SCREEN_SIZE[1] * 3 / 5 - (75 / 2),
+                                           150, 75):
+                        """Set STATE to quit"""
+                        STATE = "quit"
+
+                        """Go to next event in event list"""
+                        continue
+
+                if STATE == "Questions":  # TODO fix & comment
+                    for box in self.input_boxes:
+                        box.handle_event(event)
+                        spaceready = self.checkInputCompleted()
+
+                    # is the spacebar pressed?
+                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),
+                                           self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
+                                           150, 75) \
+                            and spaceready:
+                        """Initialize new trial with CURRENT_SEQUENCELENGTH"""
+                        self.initializeTrial(CURRENT_SEQUENCELENGTH)
+
+                        """Set starttime of experiment to current time"""
+                        self.startTime = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+                        """Set starttime of current trial to current time"""
+                        self.time_start = time()
+                        STATE = "trial"
+                        continue
+
+                    """If quit button is pressed"""
+                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                    if self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),
+                                           self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
                                            150, 75):
                         """Set STATE to quit"""
                         STATE = "quit"
@@ -188,9 +255,16 @@ class Game:
                                 """Add time to list of trial times"""
                                 self.times.append(self.time_trial)
 
-                                """Add 2-tuple of WMC and trial time to seqLength_Times_List"""
-                                self.SeqLength_Times_List.append({'Sequence length': CURRENT_SEQUENCELENGTH - 1,
-                                                                  'Trial time': self.time_trial})
+                                """Add 2-tuple of WMC and trial time to seqLength_Times_List"""  # TODO commenting
+                                self.resultsRaw.append({
+                                    'Initials': self.initials,
+                                    'Age': self.age,
+                                    'Gender': self.gender,
+                                    'Start time': self.startTime,
+                                    'Seq len': CURRENT_SEQUENCELENGTH,
+                                    'Trial time': self.time_trial,
+                                    'Completed': False
+                                })
 
                                 """Add 1 to amount of errors made"""
                                 self.player_errors += 1
@@ -206,20 +280,28 @@ class Game:
                         """Set correct_seq to True to indicate the player had entered the correct sequence"""
                         self.correct_seq = True
 
-                        """Increase CURRENT_SEQUENCELENGTH by one for the next trial"""
-                        CURRENT_SEQUENCELENGTH += 1
-
-                        """Reset amount of player errors for the next trial"""
-                        self.player_errors = 0
-
                         """Calculate time used to complete this trial"""
                         self.time_trial = time() - self.time_start
 
                         """Add time to list of trial times"""
                         self.times.append(self.time_trial)
 
-                        """Add 2-tuple of WMC and trial time to seqLength_Times_List"""
-                        self.SeqLength_Times_List.append((CURRENT_SEQUENCELENGTH - 1, self.time_trial))
+                        """Add 2-tuple of WMC and trial time to seqLength_Times_List"""  # TODO commenting
+                        self.resultsRaw.append({
+                            'Initials': self.initials,
+                            'Age': self.age,
+                            'Gender': self.gender,
+                            'Start time': self.startTime,
+                            'Seq len': CURRENT_SEQUENCELENGTH,
+                            'Trial time': self.time_trial,
+                            'Completed': True
+                        })
+
+                        """Increase CURRENT_SEQUENCELENGTH by one for the next trial"""
+                        CURRENT_SEQUENCELENGTH += 1
+
+                        """Reset amount of player errors for the next trial"""
+                        self.player_errors = 0
 
                         """Set STATE to feedback"""
                         STATE = "feedback"
@@ -252,6 +334,9 @@ class Game:
 
                             """If all trials have been completed"""
                         else:
+                            """Set endtime of experiment to current time"""
+                            self.endTime = datetime.datetime.now()
+
                             """Set STATE to final"""
                             STATE = "final"
 
@@ -268,22 +353,56 @@ class Game:
                                                     self.SCREEN_SIZE[1] * 4 / 5 - (100 / 2),
                                                     200, 100)
                                 and self.player_errors > self.ALLOWED_ERRORS):
+                        """Set endtime of experiment to current time"""
+                        self.endTime = datetime.datetime.now()
+
                         """Set STATE to final"""
                         STATE = "final"
 
                         """Go to the next event in event list"""
                         continue
 
+
+                """If in result state"""
+                if STATE == "results":
+                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (150 / 2),
+                                           self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2),
+                                           200, 100):
+                        STATE = "final"
+                    continue
+
                 """If in final state"""
                 if STATE == "final":
-                    """Save the results of the Game to CSV file"""
-                    self.saveResults(self.SeqLength_Times_List)
+                    """If results button is pressed"""
+                    if self.button_pressed(self.SCREEN_SIZE[0] / 2 - (150 / 2),
+                                           self.SCREEN_SIZE[1] * 3 / 5 - (100 / 2),
+                                           200, 75, ):
+                        STATE = "results"
+                        continue
 
                     """If quit button is pressed"""
                     # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
                     if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (150 / 2),
                                            self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2),
                                            200, 100):
+                        """"""  # TODO commenting
+                        df = pandas.DataFrame(self.resultsRaw)
+                        df = df[df.Completed != False]
+                        wmc = df['Seq len'].max()
+                        avgtime = df["Trial time"].mean()
+                        self.results.append({
+                            'Initials': self.initials,
+                            'Age': self.age,
+                            'Gender': self.gender,
+                            'Start time': self.startTime,
+                            'End time': self.endTime,
+                            'WMC': wmc,
+                            'Avg trial time': avgtime
+                        })
+
+                        """Save the results of the Game to CSV file"""
+                        self.saveResults()
+
                         """Set STATE to quit"""
                         STATE = "quit"
 
@@ -307,6 +426,10 @@ class Game:
                 """Tell View.py to draw the welcome screen"""
                 self.view.draw_welcome()
 
+            if STATE == "Questions":  # TODO fix
+                # draw the welcome message (scroll down for the function)
+                self.view.draw_question(self.input_boxes, self.spaceready)
+
             """If in trial state"""
             if STATE == "trial":
                 """Tell View.py to draw the trial with current board from Board.py and clicked sequence"""
@@ -320,7 +443,11 @@ class Game:
             """If in final state"""
             if STATE == "final":
                 """Tell View.py to draw the final screen with WMC and average trial time"""
-                self.view.draw_final((CURRENT_SEQUENCELENGTH - 1), (sum(self.times) / len(self.times)))
+                self.view.draw_final(pandas.DataFrame(self.resultsRaw))
+
+            """"""  # TODO comment
+            if STATE == "results":
+                self.view.draw_results(pandas.DataFrame(self.resultsRaw))
 
             """If in quite state"""
             if STATE == "quit":
