@@ -82,15 +82,3 @@ class InputBox:
         """ Resize the box if the text is too long. """
         width = max(200, self.txt_surface.get_width() + 10)  # Width
         self.rect.w = width  # Width
-
-    """Draw the InputBox on given Surface"""
-
-    def draw(self, screen):  # Surface
-        """Blit the text"""
-        screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))  # (Surface source, Rect area)
-
-        """Blit the rect"""
-        pygame.draw.rect(screen,  # Surface
-                         self.color,  # Color (R,G,B)
-                         self.rect,  # Rect(X,Y,W,H)
-                         2)  # Thickness edge
