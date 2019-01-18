@@ -1,0 +1,4 @@
+Age,Completed,Gender,Initials,Seq len,Start time,Trial time
+21,True,female,RK,2,18-01-2019 13:44:14,
+21,True,female,R,2,18-01-2019 13:51:37,0.8788919448852539
+21,False,female,R,2,18-01-2019 13:51:59,0.5267109870910645
