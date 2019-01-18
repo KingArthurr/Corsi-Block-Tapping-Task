@@ -42,7 +42,6 @@ class View:
         """Set the screens backgroundcolour to BACKGR_COL"""
         self.screen.fill(self.BACKGR_COL)  # Color (R,G,B)
 
-<<<<<<< HEAD
     """Draws text"""
     def draw_text (self, text, div1, div2, small):
         """If text needs to be small"""
@@ -74,8 +73,6 @@ class View:
             """Draw text on rectangle on screen"""
             self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
             
-=======
->>>>>>> 23fa4dee3af7796d9f4519c18795fbe10c6748f3
     """Draws welcome screen"""
 
     def draw_welcome(self):
@@ -314,14 +311,10 @@ class View:
                        True)  # Small Boolean
 
         """Draw average completion time"""
-<<<<<<< HEAD
-        self.draw_text("Your average completion time is " + str(resultsRaw['Trial time'].mean()) + " s", 2.0, 2.5, True)
-=======
         self.draw_text("Your average completion time is " + str(resultsRaw['Trial time'].mean()) + " s",  # Text
                        2.0,  # Div1 X
                        2.5,  # Div2 Y
                        True)  # Small Boolean
->>>>>>> 23fa4dee3af7796d9f4519c18795fbe10c6748f3
 
         """Draw Results button"""
         # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
