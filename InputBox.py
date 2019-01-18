@@ -3,48 +3,94 @@ import pygame
 
 class InputBox:
 
-    def __init__(self, x, y, w, h, text=''):
+    def __init__(self, x,  # X Coordinate
+                 y,  # Y Coordinate
+                 w,  # Width
+                 h,  # Heigth
+                 text=''):  # Text
+
+        """Initialize pygame"""
         pygame.init()
 
-        self.COLOR_INACTIVE = pygame.Color('lightskyblue3')
-        self.COLOR_ACTIVE = pygame.Color('dodgerblue2')
-        self.FONT = pygame.font.Font(None, 32)
+        """Initialise colors used for screen"""
+        self.COLOR_INACTIVE = pygame.Color('lightskyblue3')  # Color(name)
+        self.COLOR_ACTIVE = pygame.Color('dodgerblue2')  # Color(name)
 
-        self.rect = pygame.Rect(x, y, w, h)
-        self.color = self.COLOR_INACTIVE
-        self.text = text
-        self.txt_surface = self.FONT.render(text, True, self.color)
-        self.active = False
+        """Set fonts"""
+        self.FONT = pygame.font.Font(None, 32)  # (object/filename, size)
 
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # If the user clicked on the input_box rect.
-            if self.rect.collidepoint(event.pos):
-                # Toggle the active variable.
-                self.active = not self.active
+        """Create InputBox rectangle"""
+        self.rect = pygame.Rect(x, y, w, h)  # Rect(X, Y, Width, Height)
+
+        """Set color"""
+        self.color = self.COLOR_INACTIVE  # Color(name)
+
+        """Set Text"""
+        self.text = text  # Text
+
+        """Create new Surface from Text"""
+        self.txt_surface = self.FONT.render(text,  # Text
+                                            True,  # Antialias
+                                            self.color)  # Text color (R,G,B)
+
+        """Set active to False"""
+        self.active = False  # Boolean
+
+    """Handles InputBox event"""
+
+    def handle_event(self, event):  # Event
+        """If mousebutton has been clicked"""
+        if event.type == pygame.MOUSEBUTTONDOWN:  # Boolean Event.Type = MouseButtonDown
+            """ If the user clicked on the input box"""
+            if self.rect.collidepoint(event.pos):  # Boolean(Mouse X, Mouse Y)
+                """ Toggle the active variable """
+                self.active = not self.active  # Boolean
+                """If user has not clicked on the input box"""
             else:
-                self.active = False
-            # Change the current color of the input box.
-            self.color = self.COLOR_ACTIVE if self.active else self.COLOR_INACTIVE
-        if event.type == pygame.KEYDOWN:
-            if self.active:
-                if event.key == pygame.K_BACKSPACE:
-                    self.text = self.text[:-1]
+                """Set active to False"""
+                self.active = False  # Boolean
+
+            """ Change the current color of the input box """
+            self.color = self.COLOR_ACTIVE if self.active else self.COLOR_INACTIVE  # Color(name)
+
+        """If a key has been pressed"""
+        if event.type == pygame.KEYDOWN:  # Boolean Event.Type = KeyDown
+            """if the InputBox has been selected"""
+            if self.active:  # Boolean
+                """If pressed key is BackSpace"""
+                if event.key == pygame.K_BACKSPACE:  # Boolean Event.Key = BackSpace
+                    """Remove one character from the text"""
+                    self.text = self.text[:-1]  # Text
+                    """If any other button has been pressed"""
                 else:
-                    self.text += event.unicode
-                # Re-render the text.
-                self.txt_surface = self.FONT.render(self.text, True, self.color)
+                    """Add pressed key unicode to text"""
+                    self.text += event.unicode  # Text
+
+                """ Re-render the text """
+                self.txt_surface = self.FONT.render(self.text,  # Text
+                                                    True,  # Antialias
+                                                    self.color)  # Text color (R,G,B)
+
+    """Return the InputBox Text"""
 
     def getValue(self):
-        return self.text
+        return self.text  # Text
+
+    """Update the InputBox"""
 
     def update(self):
-        # Resize the box if the text is too long.
-        width = max(200, self.txt_surface.get_width() + 10)
-        self.rect.w = width
+        """ Resize the box if the text is too long. """
+        width = max(200, self.txt_surface.get_width() + 10)  # Width
+        self.rect.w = width  # Width
 
-    def draw(self, screen):
-        # Blit the text.
-        screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
-        # Blit the rect.
-        pygame.draw.rect(screen, self.color, self.rect, 2)
+    """Draw the InputBox on given Surface"""
+
+    def draw(self, screen):  # Surface
+        """Blit the text"""
+        screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))  # (Surface source, Rect area)
+
+        """Blit the rect"""
+        pygame.draw.rect(screen,  # Surface
+                         self.color,  # Color (R,G,B)
+                         self.rect,  # Rect(X,Y,W,H)
+                         2)  # Thickness edge

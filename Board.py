@@ -25,7 +25,7 @@ class Board:
 
             """The random coordinate of the tile is checked with the list of rectangles (other tiles) 
                 if there is no collision"""
-            if self.noCollision(tile, TILE_SIZE):  # Boolean
+            if self.noCollision(tile, TILE_SIZE):  # Boolean ((Tile X, Tile Y),(Tile Width, Tile Heigth))
                 """The tile does not have collision with tiles in rectangle list, so added to list tiles"""
                 self.tiles.append(tile)  # (Tile X, Tile Y)
 
@@ -36,43 +36,46 @@ class Board:
     """Returns list of tiles"""
 
     def getCopy(self):
-        return self.tiles # List<(Tile X, Tile Y)>
+        return self.tiles  # List<(Tile X, Tile Y)>
 
     """Returns random coordinates which are on the screen and have a tilesize length distance from the borders"""
 
-    def getRandomCoordinate(self, SCREEN_SIZE, # (Screen Width, Screen Heigth)
-                            TILE_SIZE): # (Tile Width, Tile Heigth)
+    def getRandomCoordinate(self, SCREEN_SIZE,  # (Screen Width, Screen Heigth)
+                            TILE_SIZE):  # (Tile Width, Tile Heigth)
         """Gives a random x-coordinate for a tile"""
         # Random value between 1 + Tile Width and Screen Width - 1 - Tile Width
-        x = random.randint(1 + TILE_SIZE[0], SCREEN_SIZE[0] - 1 - TILE_SIZE[0]) # Int
+        x = random.randint(1 + TILE_SIZE[0], SCREEN_SIZE[0] - 1 - TILE_SIZE[0])  # Int
 
         """Gives a random y-coordinate for a tile"""
         # Random value between 1 + Tile Height and Screen Height - 1 - Tile Height
-        y = random.randint(1 + TILE_SIZE[1], SCREEN_SIZE[1] - 1 - TILE_SIZE[1]) # Int
+        y = random.randint(1 + TILE_SIZE[1], SCREEN_SIZE[1] - 1 - TILE_SIZE[1])  # Int
 
         """return random coordinates"""
-        return (x, y) # (Tile X, Tile Y)
+        return (x, y)  # (Tile X, Tile Y)
 
     """Returns boolean if tile (rectangle) collides with the other tiles in list"""
 
-    def noCollision(self, tile, TILE_SIZE):
+    def noCollision(self, tile,  # (Tile X, Tile Y)
+                    TILE_SIZE):  # (Tile Width, Tile Height)
         """Create a new rectangle object with the random coordinates of the tile checked for collision.
             Location and size are changed to create a 1 pixel buffer between the rectangles."""
-        new_tile = Rect(tile[0] - 1, tile[1] - 1, TILE_SIZE[0] + 2, TILE_SIZE[1] + 2)
+        new_tile = Rect(tile[0] - 1, tile[1] - 1,  # Rect(Tile X - 1, Tile Y - 1,
+                        TILE_SIZE[0] + 2, TILE_SIZE[1] + 2)  # Tile Width + 2, Tile Height + 2)
 
         """The function collideslistall gives back a list containing which rectangles collide. 
             A boolean is returned if that list equals an empty list, in other words if tiles collide"""
-        return new_tile.collidelistall(self.rects) == []
+        return new_tile.collidelistall(self.rects) == []  # Boolean
 
     """Returns the rectangle, if mouseclick is on a rectangle and returns None if no rectangle is cllicked"""
 
-    def checkMouseClick(self, mouse_loc):
+    def checkMouseClick(self, mouse_loc):  # (Mouse X, Mouse Y)
         """Iterate over the list with rectangles"""
+        # for Rect in List<Rect>
         for rect in self.rects:
             """Checks if mouse location is on a rectangle"""
             if rect.collidepoint(mouse_loc):
                 """Returns clicked rectangle"""
-                return rect
+                return rect  # Rect
 
         """Returns None, because no rectangle clicked"""
-        return None
+        return None  # None
