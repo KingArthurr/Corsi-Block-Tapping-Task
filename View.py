@@ -43,19 +43,41 @@ class View:
         """Set the screens backgroundcolour to BACKGR_COL"""
         self.screen.fill(self.BACKGR_COL)  # Color (R,G,B)
 
-    """Draw the welcome screen"""
-
-    def draw_welcome(self):
-        """Draw welcome screen title"""
-        text_surface = self.font.render("Corsi Block Tapping Task",  # Text
+    """Draws text"""
+    def draw_text (self, text, div1, div2, small):
+        """If text needs to be small"""
+        if small: 
+            """Render text and store it as variable text_surface"""
+            text_surface = self.font_small.render(text,  # Text
                                         True,  # Antialias
                                         self.col_darkblue,  # Text color (R,G,B)
                                         self.BACKGR_COL)  # Background color (R.G.B)
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] / 2,  # Center X
-                                 self.SCREEN_SIZE[1] / 4)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
-
+            """Get the rectangle around the text of text_surface and store it as varaible text_rectangle"""
+            text_rectangle = text_surface.get_rect()  # Rect
+            """Center the rectangle with text around x and y coordinates"""
+            text_rectangle.center = (self.SCREEN_SIZE[0] / div1,  # Center X
+                                 self.SCREEN_SIZE[1] / div2)  # Center Y
+            """Draw text on rectangle on screen"""
+            self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+            """If text does not have to be small"""
+        else:
+             """Render text and store it as variable text_surface"""
+            text_surface = self.font.render(text,  # Text
+                                        True,  # Antialias
+                                        self.col_darkblue,  # Text color (R,G,B)
+                                        self.BACKGR_COL)  # Background color (R.G.B)
+             """Get the rectangle around the text of text_surface and store it as varaible text_rectangle"""
+            text_rectangle = text_surface.get_rect()  # Rect
+             """Center the rectangle with text around x and y coordinates"""
+            text_rectangle.center = (self.SCREEN_SIZE[0] / div1,  # Center X
+                                 self.SCREEN_SIZE[1] / div2)  # Center Y
+            """Draw text on rectangle on screen"""
+            self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+            
+    """Draws welcome screen"""
+    def draw_welcome(self):
+        """Draw welcome screen title"""
+        self.draw_text("Corsi Block Tapping Task", 2, 4, False) 
         """Draw Start button"""
         # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
         self.draw_button("Start",  # Text
@@ -76,48 +98,21 @@ class View:
                          self.col_red,  # Inactive color (R,G,B)
                          self.col_bright_red)  # Active color (R,G,B)
 
-    """"""  # TODO comment
+    """Draws question screen"""
 
     def draw_question(self, input_boxes):  # List<InputBoxes> 
         """Draw title"""
-        text_surface = self.font.render("First some questions",  # Text
-                                        True,  # Antialias
-                                        self.col_darkblue,  # Text color (R,G,B)
-                                        self.BACKGR_COL)  # Background color (R,G,B)
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0,  # Center X
-                                 self.SCREEN_SIZE[1] * 1 / 10)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+        self.draw_text("First some questions", 2, 10, True)
 
         """Draw Initials Question"""
-        text_surface = self.font_small.render("Initials (letters only)",  # Text
-                                              True,  # Antialias
-                                              self.col_darkblue,  # Text color (R,G,B)
-                                              self.BACKGR_COL)  # Background color (R,G,B)
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] * 2 / 7,  # Center X
-                                 self.SCREEN_SIZE[1] * 2 / 10)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+        self.draw_text("Initials (letters only)", 3.5, 5, True)
 
         """Draw Age Question"""
-        text_surface = self.font_small.render("Age",  # Text
-                                              True,  # Antialias
-                                              self.col_darkblue,  # Text color (R,G,B)
-                                              self.BACKGR_COL)  # Background color (R,G,B)
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] * 2 / 7,  # Center X
-                                 self.SCREEN_SIZE[1] * 3 / 10)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+        self.draw_text("Age", 3.5, (3.33), True)
 
         """Draw Gender Question"""
-        text_surface = self.font_small.render("Gender (M/F)",  # Text
-                                              True,  # Antialias
-                                              self.col_darkblue,  # Text color (R,G,B)
-                                              self.BACKGR_COL)  # Background color (R,G,B)
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] * 2 / 7,  # Center X
-                                 self.SCREEN_SIZE[1] * 4 / 10)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+        self.draw_text("Gender (M/F)", 3.5, 2.5, True)
+    
 
         """For every box in input_boxes list"""
         # InputBox in List<InputBox>
@@ -143,7 +138,7 @@ class View:
                          self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),  # X Coordinate
                          self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),  # Y Coordinate
                          150,  # Width
-                         75,  # Heigth
+                         75,  # Height
                          self.col_red,  # Inactive color (R,G,B)
                          self.col_bright_red)  # Active color (R,G,B)
 
@@ -152,38 +147,19 @@ class View:
     def draw_trial(self, tiles,  # List<(Tile X, Tile Y)>
                    clickedseq):  # List<(Clicked Tile X, Clicked Tile Y)>
         """Draw instructions"""
-        text_surface = self.font_small.render("Click on the tiles in order of the shown sequence",  # Text
-                                              True,  # Antialias
-                                              self.col_darkblue,  # Text color (R,G,B)
-                                              self.BACKGR_COL)  # Background color (R,G,B)
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0,  # Center X
-                                 self.SCREEN_SIZE[1] * 19 / 20)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
-
-        """Get current mouse position"""
-        mouse = pygame.mouse.get_pos()  # (Mouse X, Mouse Y)
+        self.draw_text("Click on the tiles in order of the shown sequence", 2.0, 1.05, True)
 
         """For each tile in tiles list do:"""
         # (Tile X, Tile Y) in List<(Tile X, Tile Y)>
         for tile in tiles:
-            """If mouse position is on a tile"""
-            # Tile X + Tile Width > Mouse X > Tile width
-            # and Tile X + Tile Heigth > Mouse Y > Tile Heigth
-            if tile[0] + self.TILE_SIZE[0] > mouse[0] > tile[0] \
-                    and tile[1] + self.TILE_SIZE[1] > mouse[1] > tile[1]:
-                """Draw rectangle in bright colour"""
-                pygame.draw.rect(self.screen,  # Surface
-                                 self.col_bright_yellow,  # Color (R,G,B)
-                                 (tile[0], tile[1],  # Rect X,Y
-                                  self.TILE_SIZE[0], self.TILE_SIZE[1]))  # Rect W,H
-                """If mouse position is not on a button"""
-            else:
-                """Draw rectagle with normal colour"""
-                pygame.draw.rect(self.screen,  # Surface
-                                 self.col_darkblue,  # Color (R,G,B)
-                                 (tile[0], tile[1],  # Rect X,Y
-                                  self.TILE_SIZE[0], self.TILE_SIZE[1]))  # Rect W,H
+            """Draw the tiles"""
+            self.draw_button(" ", #Text
+                             tile[0], # X Coordinate
+                             tile[1], # Y Coordinate
+                             self.TILE_SIZE[0], # Width
+                             self.TILE_SIZE[1], # Height
+                             self.col_darkblue, # Inactive color (R,G,B)
+                             self.col_bright_yellow) # Active color (R,G,B)
 
         """For each clicked tile in clickedseq list do:"""
         for click in clickedseq:
@@ -246,48 +222,24 @@ class View:
                       errors_reached):  # Boolean maximum amount of errors reached
         """If player completed the sequence"""
         if correct:
-            """Set text"""
-            text_surface = self.font_small.render("You had the correct sequence of blocks",  # Text
-                                                  True,  # Antialias
-                                                  self.col_darkblue,  # Text color (R,G,B)
-                                                  self.BACKGR_COL)  # Background color (R,G,B)
+            """Draw feedback text"""
+            
+            self.draw_text("You had the correct sequence of blocks", 2.0, 5, True)
+         
 
             """If player did not complete the sequence"""
         elif not correct:
-            """Set text"""
-            text_surface = self.font_small.render("You had an incorrect sequence of blocks",  # Text
-                                                  True,  # Antialias
-                                                  self.col_darkblue,  # Text color (R,G,B)
-                                                  self.BACKGR_COL)  # Background color (R,G,B)
-
-        """"Draw text"""
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0,  # Center X
-                                 self.SCREEN_SIZE[1] * 1 / 5)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+            """Draw feedback text"""
+            self.draw_text("You had an incorrect sequence of blocks", 2.0, 5, True)
 
         """Draw completion time of the sequence"""
-        text_surface = self.font_small.render("Your completion time was: " + str(time) + " seconds",  # Text
-                                              True,  # Antialias
-                                              self.col_darkblue,  # Text color (R,G,B)
-                                              self.BACKGR_COL)  # Background color (R,G,B)
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0,  # Center X
-                                 self.SCREEN_SIZE[1] * 2 / 5)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+        self.draw_text("Your completion time was: " + str(time) + " seconds", 2.0, 2.5, True)
 
         """If maximum amount of errors has been reached"""
         # Boolean == True
         if errors_reached:
             """Draw notification"""
-            text_surface = self.font_small.render("Maximum amount of errors reached",  # Text
-                                                  True,  # Antialias
-                                                  self.col_darkblue,  # Text color (R,G,B)
-                                                  self.BACKGR_COL)  # Background color (R,G,B)
-            text_rectangle = text_surface.get_rect()  # Rect
-            text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0,  # Center X
-                                     self.SCREEN_SIZE[1] * 3 / 5)  # Center Y
-            self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+            self.draw_text("Maximum amount of errors reached", 2.0, 1.667, True)
 
             """Draw quit button"""
             # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
@@ -325,25 +277,10 @@ class View:
 
     def draw_final(self, resultsRaw=[]):  # Dictionairy<Header,Result>
         """Draw WMC score"""
-        text_surface = self.font_small.render("You have a WMC of " + str(resultsRaw['Seq len'].max()),  # Text
-                                              True,  # Antialias
-                                              self.col_darkblue,  # Text color (R,G,B)
-                                              self.BACKGR_COL)  # Background color (R,G,B)
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0,  # Center X
-                                 self.SCREEN_SIZE[1] * 1 / 5)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+        self.draw_text("You have a WMC of " + str(resultsRaw['Seq len'].max()), 2.0, 5, True)
 
         """Draw average completion time"""
-        text_surface = self.font_small.render(
-            "Your average completion time is " + str(resultsRaw['Trial time'].mean()) + " s",  # Text
-            True,  # Antialias
-            self.col_darkblue,  # Text color (R,G,B)
-            self.BACKGR_COL)  # Background color (R,G,B)
-        text_rectangle = text_surface.get_rect()  # Rect
-        text_rectangle.center = (self.SCREEN_SIZE[0] / 2.0,  # Center X
-                                 self.SCREEN_SIZE[1] * 2 / 5)  # Center Y
-        self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+        self.draw_text("Your average completion time is " + str(resultsRaw['Trial time'].mean()) + " s", 2.0, 2.5)
 
         """Draw Results button"""
         # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
