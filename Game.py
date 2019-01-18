@@ -1,6 +1,5 @@
 import datetime
 import random
-import sys
 from time import time
 
 import pandas
@@ -9,8 +8,6 @@ import pygame
 from Board import Board
 from InputBox import InputBox
 from View import View
-
-
 
 """ This class is takes care of all the game logic and will be used as the Controller.  """
 
@@ -124,6 +121,7 @@ class Game:
         return clicked
 
     """Save the results of the Game to CSV files"""
+
     def saveResults(self):
         """Creates name for file including the results (averages)"""
         fileraw = "CorsiBlockTapping_results.csv"
@@ -140,7 +138,7 @@ class Game:
             df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, header=False, mode='a')
         """"Close file"""
         f.close()
-        
+
         """Creates name for file including the raw_results"""
         fileraw = "CorsiBlockTapping_raw.csv"
         """Creates data frame of raw_results"""
@@ -149,15 +147,18 @@ class Game:
         f = open(fileraw, "a")
         """If the file is empty"""
         if f.tell() == 0:
-             """Store the data including the headers"""
+            """Store the data including the headers"""
             df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, mode='a')
         else:
             """Else: store the data without the headers"""
             df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, header=False, mode='a')
-         """"Close file"""
+            """"Close file"""
         f.close()
-        
+
+
     """"Checks if input is given by the participant, before starting experiment"""
+
+
     def checkInputCompleted(self):
         """If the input in box Input ID contains only letters"""
         if self.inputID.getValue().isalpha():
@@ -179,7 +180,9 @@ class Game:
         """If all inputs are according their requirements, so only letters, digits or f/m, then this will return true, otherwise false"""
         return self.initials is not None and self.age != 0 and self.gender is not None
 
+
     """Main game loop to handle game logic"""
+
 
     def gameLoop(self):
         """Set STATE to welcome"""
@@ -222,7 +225,7 @@ class Game:
 
                         """Go to next event in event list"""
                         continue
-                """If Questions state"""                    
+                """If Questions state"""
                 if STATE == "Questions":
                     """For every box in inputboxes do:"""
                     for box in self.input_boxes:
@@ -280,7 +283,7 @@ class Game:
                                 """Add time to list of trial times"""
                                 self.times.append(self.time_trial)
 
-                                """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=False as dictonary to list ResultsRaw""" 
+                                """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=False as dictonary to list ResultsRaw"""
                                 self.resultsRaw.append({
                                     'Initials': self.initials,
                                     'Age': self.age,
@@ -311,73 +314,54 @@ class Game:
                         """Add time to list of trial times"""
                         self.times.append(self.time_trial)
 
-                       """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=True as dictonary to list ResultsRaw""" 
-                        self.resultsRaw.append({
-                            'Initials': self.initials,
-                            'Age': self.age,
-                            'Gender': self.gender,
-                            'Start time': self.startTime,
-                            'Seq len': CURRENT_SEQUENCELENGTH,
-                            'Trial time': self.time_trial,
-                            'Completed': True
-                        })
+                    """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=True as dictonary to list ResultsRaw"""
+                    self.resultsRaw.append({
+                        'Initials': self.initials,
+                        'Age': self.age,
+                        'Gender': self.gender,
+                        'Start time': self.startTime,
+                        'Seq len': CURRENT_SEQUENCELENGTH,
+                        'Trial time': self.time_trial,
+                        'Completed': True
+                    })
 
-                        """Increase CURRENT_SEQUENCELENGTH by one for the next trial"""
-                        CURRENT_SEQUENCELENGTH += 1
+                    """Increase CURRENT_SEQUENCELENGTH by one for the next trial"""
+                    CURRENT_SEQUENCELENGTH += 1
 
-                        """Reset amount of player errors for the next trial"""
-                        self.player_errors = 0
+                    """Reset amount of player errors for the next trial"""
+                    self.player_errors = 0
 
-                        """Set STATE to feedback"""
-                        STATE = "feedback"
+                    """Set STATE to feedback"""
+                    STATE = "feedback"
+
+                    """Go to the next event in event list"""
+                    continue
+
+            """If in feedback state"""
+            if STATE == "feedback":
+                """If next trial button is pressed and player has not made more than one error"""
+                # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),
+                                       self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
+                                       150, 75) \
+                        and self.player_errors <= self.ALLOWED_ERRORS:
+
+                    """If not all trials have been completed"""
+                    if CURRENT_SEQUENCELENGTH <= self.SEQUENCE_LENGTH:
+                        """Initialize new trial with CURRENT_SEQUENCELENGTH"""
+                        self.initializeTrial(CURRENT_SEQUENCELENGTH)
+
+                        """Set starttime of current trial to current time"""
+                        self.time_start = time()
+
+                        """Set STATE to trial"""
+                        STATE = "trial"
 
                         """Go to the next event in event list"""
                         continue
 
-                """If in feedback state"""
-                if STATE == "feedback":
-                    """If next trial button is pressed and player has not made more than one error"""
-                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
-                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),
-                                           self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
-                                           150, 75) \
-                            and self.player_errors <= self.ALLOWED_ERRORS:
-
-                        """If not all trials have been completed"""
-                        if CURRENT_SEQUENCELENGTH <= self.SEQUENCE_LENGTH:
-                            """Initialize new trial with CURRENT_SEQUENCELENGTH"""
-                            self.initializeTrial(CURRENT_SEQUENCELENGTH)
-
-                            """Set starttime of current trial to current time"""
-                            self.time_start = time()
-
-                            """Set STATE to trial"""
-                            STATE = "trial"
-
-                            """Go to the next event in event list"""
-                            continue
-
-                            """If all trials have been completed"""
-                        else:
-                            """Set endtime of experiment to current time"""
-                            self.endTime = datetime.datetime.now()
-
-                            """Set STATE to final"""
-                            STATE = "final"
-
-                            """Go to the next event in event list"""
-                            continue
-
-                    """If quit button is pressed"""
-                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
-                    if (self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),
-                                            self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
-                                            150, 75)
-                        and self.player_errors <= self.ALLOWED_ERRORS) \
-                            or (self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (200 / 2),
-                                                    self.SCREEN_SIZE[1] * 4 / 5 - (100 / 2),
-                                                    200, 100)
-                                and self.player_errors > self.ALLOWED_ERRORS):
+                        """If all trials have been completed"""
+                    else:
                         """Set endtime of experiment to current time"""
                         self.endTime = datetime.datetime.now()
 
@@ -387,62 +371,83 @@ class Game:
                         """Go to the next event in event list"""
                         continue
 
+                """If quit button is pressed"""
+                # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                if (self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),
+                                        self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
+                                        150, 75)
+                    and self.player_errors <= self.ALLOWED_ERRORS) \
+                        or (self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (200 / 2),
+                                                self.SCREEN_SIZE[1] * 4 / 5 - (100 / 2),
+                                                200, 100)
+                            and self.player_errors > self.ALLOWED_ERRORS):
+                    """Set endtime of experiment to current time"""
+                    self.endTime = datetime.datetime.now()
 
-                """If in result state"""
-                if STATE == "results":
-                    """If quit button is pressed"""
-                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (150 / 2),
-                                           self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2),
-                                           200, 100):
-                        """"State becomes final"""
-                        STATE = "final"
+                    """Set STATE to final"""
+                    STATE = "final"
+
+                    """Go to the next event in event list"""
                     continue
 
-                """If in final state"""
-                if STATE == "final":
-                    """If results button is pressed"""
-                    if self.button_pressed(self.SCREEN_SIZE[0] / 2 - (150 / 2),
-                                           self.SCREEN_SIZE[1] * 3 / 5 - (100 / 2),
-                                           200, 75, ):
-                        STATE = "results"
-                        """Go to the next event in event list"""
-                        continue
+            """If in result state"""
+            if STATE == "results":
+                """If quit button is pressed"""
+                if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (150 / 2),
+                                       self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2),
+                                       200, 100):
+                    """"State becomes final"""
+                    STATE = "final"
+                continue
 
-                    """If quit button is pressed"""
-                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
-                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (150 / 2),
-                                           self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2),
-                                           200, 100):
-                        """Create panda dataframe of resultsRaw and store it in variable df"""
-                        df = pandas.DataFrame(self.resultsRaw)
-                        """Check if all values in dataframe are completed"""
-                        df = df[df.Completed != False]
-                        """Pick the largest completed sequence length, so that is the WMC of the participant"""
-                        wmc = df['Seq len'].max()
-                        """Calculate the average time of the trials and store it as avgtime"""
-                        avgtime = df["Trial time"].mean()
-                        
-                       """Add Initials, Age, Gender, Start time,End time, WMC and Average trial time as dictonary to list results (averages)""" 
-                        self.results.append({
-                            'Initials': self.initials,
-                            'Age': self.age,
-                            'Gender': self.gender,
-                            'Start time': self.startTime,
-                            'End time': self.endTime,
-                            'WMC': wmc,
-                            'Avg trial time': avgtime
-                        })
+            """If in final state"""
+            if STATE == "final":
+                """If results button is pressed"""
+                if self.button_pressed(self.SCREEN_SIZE[0] / 2 - (150 / 2),
+                                       self.SCREEN_SIZE[1] * 3 / 5 - (100 / 2),
+                                       200, 75, ):
+                    STATE = "results"
+                    """Go to the next event in event list"""
+                    continue
 
-                        """Save the results of the Game to CSV file"""
-                        self.saveResults()
+                """If quit button is pressed"""
+                # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (150 / 2),
+                                       self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2),
+                                       200, 100):
+                    """Create panda dataframe of resultsRaw and store it in variable df"""
+                    df = pandas.DataFrame(self.resultsRaw)
 
-                        """Set STATE to quit"""
-                        STATE = "quit"
+                    """Check if all values in dataframe are completed"""
+                    df = df[df.Completed != False]
 
-                        """Go to the next event in event list"""
-                        continue
+                    """Pick the largest completed sequence length, so that is the WMC of the participant"""
+                    wmc = df['Seq len'].max()
 
-                """If exit system button is clicked"""
+                    """Calculate the average time of the trials and store it as avgtime"""
+                    avgtime = df["Trial time"].mean()
+
+                    """Add Initials, Age, Gender, Start time,End time, WMC and Average trial time as dictonary to list results (averages)"""
+                    self.results.append({
+                        'Initials': self.initials,
+                        'Age': self.age,
+                        'Gender': self.gender,
+                        'Start time': self.startTime,
+                        'End time': self.endTime,
+                        'WMC': wmc,
+                        'Avg trial time': avgtime
+                    })
+
+                    """Save the results of the Game to CSV file"""
+                    self.saveResults()
+
+                    """Set STATE to quit"""
+                    STATE = "quit"
+
+                    """Go to the next event in event list"""
+                    continue
+
+                    """If exit system button is clicked"""
                 if event.type == pygame.QUIT:
                     """Set STATE to quit"""
                     STATE = "quit"
@@ -458,7 +463,7 @@ class Game:
             if STATE == "welcome":
                 """Tell View.py to draw the welcome screen"""
                 self.view.draw_welcome()
-            
+
             """If in Questions state"""
             if STATE == "Questions":  # TODO fix
                 """Tell View.py to draw Question screen"""
@@ -488,7 +493,7 @@ class Game:
             if STATE == "quit":
                 """Close screen"""
                 pygame.display.quit()
- 
+
                 """Exit pygame"""
                 pygame.quit()
 
