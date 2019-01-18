@@ -10,8 +10,6 @@ from Board import Board
 from InputBox import InputBox
 from View import View
 
-
-
 """ This class is takes care of all the game logic and will be used as the Controller.  """
 
 
@@ -124,24 +122,25 @@ class Game:
         return clicked
 
     """Save the results of the Game to CSV file"""
+
     # TODO IMRPOVE
     def saveResults(self):
         fileraw = "CorsiBlockTapping_results.csv"
         df = pandas.DataFrame(self.results)
         f = open(fileraw, "a")
         if f.tell() == 0:
-            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, mode='a')
+            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, mode='a')
         else:
-            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, header=False, mode='a')
+            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, header=False, mode='a')
         f.close()
 
         fileraw = "CorsiBlockTapping_raw.csv"
         df = pandas.DataFrame(self.resultsRaw)
         f = open(fileraw, "a")
         if f.tell() == 0:
-            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, mode='a')
+            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, mode='a')
         else:
-            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, header=False, mode='a')
+            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, header=False, mode='a')
         f.close()
 
     def checkInputCompleted(self):  # TODO fix
@@ -362,7 +361,6 @@ class Game:
                         """Go to the next event in event list"""
                         continue
 
-
                 """If in result state"""
                 if STATE == "results":
                     if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (150 / 2),
@@ -388,6 +386,7 @@ class Game:
                         """"""  # TODO commenting
                         df = pandas.DataFrame(self.resultsRaw)
                         df = df[df.Completed != False]
+                        print df
                         wmc = df['Seq len'].max()
                         avgtime = df["Trial time"].mean()
                         self.results.append({
@@ -453,7 +452,7 @@ class Game:
             if STATE == "quit":
                 """Close screen"""
                 pygame.display.quit()
- 
+
                 """Exit pygame"""
                 pygame.quit()
 

@@ -1,6 +1,6 @@
 import random
 
-import pygame
+from pygame import Rect
 
 """ Class used for controlling the board. Takes care of creating and plotting tiles etc. Used as Model   """
 
@@ -27,7 +27,7 @@ class Board:
                 self.tiles.append(tile)
 
                 """The tile does not have collision with tiles in rectangle list, so added to rectangle list"""
-                self.rects.append(pygame.Rect(tile[0], tile[1], TILE_SIZE[0], TILE_SIZE[1]))
+                self.rects.append(Rect(tile[0], tile[1], TILE_SIZE[0], TILE_SIZE[1]))
 
     """Returns list of tiles"""
 
@@ -55,7 +55,7 @@ class Board:
     def noCollision(self, tile, TILE_SIZE):
         """Create a new rectangle object with the random coordinates of the tile checked for collision.
             Location and size are changed to create a 1 pixel buffer between the rectangles."""
-        new_tile = pygame.Rect(tile[0] - 1, tile[1] - 1, TILE_SIZE[0] + 2, TILE_SIZE[1] + 2)
+        new_tile = Rect(tile[0] - 1, tile[1] - 1, TILE_SIZE[0] + 2, TILE_SIZE[1] + 2)
 
         """The function collideslistall gives back a list containing which rectangles collide. 
             A boolean is returned if that list equals an empty list, in other words if tiles collide"""
