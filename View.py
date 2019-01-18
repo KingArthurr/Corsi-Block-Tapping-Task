@@ -42,6 +42,40 @@ class View:
         """Set the screens backgroundcolour to BACKGR_COL"""
         self.screen.fill(self.BACKGR_COL)  # Color (R,G,B)
 
+<<<<<<< HEAD
+    """Draws text"""
+    def draw_text (self, text, div1, div2, small):
+        """If text needs to be small"""
+        if small: 
+            """Render text and store it as variable text_surface"""
+            text_surface = self.font_small.render(text,  # Text
+                                        True,  # Antialias
+                                        self.col_darkblue,  # Text color (R,G,B)
+                                        self.BACKGR_COL)  # Background color (R.G.B)
+            """Get the rectangle around the text of text_surface and store it as varaible text_rectangle"""
+            text_rectangle = text_surface.get_rect()  # Rect
+            """Center the rectangle with text around x and y coordinates"""
+            text_rectangle.center = (self.SCREEN_SIZE[0] / div1,  # Center X
+                                 self.SCREEN_SIZE[1] / div2)  # Center Y
+            """Draw text on rectangle on screen"""
+            self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+            """If text does not have to be small"""
+        else:
+            """Render text and store it as variable text_surface"""
+            text_surface = self.font.render(text,  # Text
+                                        True,  # Antialias
+                                        self.col_darkblue,  # Text color (R,G,B)
+                                        self.BACKGR_COL)  # Background color (R.G.B)
+            """Get the rectangle around the text of text_surface and store it as varaible text_rectangle"""
+            text_rectangle = text_surface.get_rect()  # Rect
+            """Center the rectangle with text around x and y coordinates"""
+            text_rectangle.center = (self.SCREEN_SIZE[0] / div1,  # Center X
+                                 self.SCREEN_SIZE[1] / div2)  # Center Y
+            """Draw text on rectangle on screen"""
+            self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+            
+=======
+>>>>>>> 23fa4dee3af7796d9f4519c18795fbe10c6748f3
     """Draws welcome screen"""
 
     def draw_welcome(self):
@@ -280,10 +314,14 @@ class View:
                        True)  # Small Boolean
 
         """Draw average completion time"""
+<<<<<<< HEAD
+        self.draw_text("Your average completion time is " + str(resultsRaw['Trial time'].mean()) + " s", 2.0, 2.5, True)
+=======
         self.draw_text("Your average completion time is " + str(resultsRaw['Trial time'].mean()) + " s",  # Text
                        2.0,  # Div1 X
                        2.5,  # Div2 Y
                        True)  # Small Boolean
+>>>>>>> 23fa4dee3af7796d9f4519c18795fbe10c6748f3
 
         """Draw Results button"""
         # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
