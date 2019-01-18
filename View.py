@@ -3,7 +3,6 @@ from time import time
 import matplotlib
 import pygame
 
-
 matplotlib.use("Agg")
 
 import pylab
@@ -43,6 +42,7 @@ class View:
         """Set the screens backgroundcolour to BACKGR_COL"""
         self.screen.fill(self.BACKGR_COL)  # Color (R,G,B)
 
+<<<<<<< HEAD
     """Draws text"""
     def draw_text (self, text, div1, div2, small):
         """If text needs to be small"""
@@ -74,10 +74,16 @@ class View:
             """Draw text on rectangle on screen"""
             self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
             
+=======
+>>>>>>> 23fa4dee3af7796d9f4519c18795fbe10c6748f3
     """Draws welcome screen"""
+
     def draw_welcome(self):
         """Draw welcome screen title"""
-        self.draw_text("Corsi Block Tapping Task", 2, 4, False) 
+        self.draw_text("Corsi Block Tapping Task",  # Text
+                       2,  # Div1 X
+                       4,  # Div2 Y
+                       False)  # Small Boolean
         """Draw Start button"""
         # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
         self.draw_button("Start",  # Text
@@ -102,17 +108,28 @@ class View:
 
     def draw_question(self, input_boxes):  # List<InputBoxes> 
         """Draw title"""
-        self.draw_text("First some questions", 2, 10, True)
+        self.draw_text("First some questions",  # Text
+                       2,  # Div1 X
+                       10,  # Div2 Y
+                       True)  # Small Boolean
 
         """Draw Initials Question"""
-        self.draw_text("Initials (letters only)", 3.5, 5, True)
+        self.draw_text("Initials (letters only)",  # Text
+                       3.5,  # Div1 X
+                       5,  # Div2 Y
+                       True)  # Small Boolean
 
         """Draw Age Question"""
-        self.draw_text("Age", 3.5, (3.33), True)
+        self.draw_text("Age",  # Text
+                       3.5,  # Div1 X
+                       3.33,  # Div2 Y
+                       True)  # Small Boolean
 
         """Draw Gender Question"""
-        self.draw_text("Gender (M/F)", 3.5, 2.5, True)
-    
+        self.draw_text("Gender (M/F)",  # Text
+                       3.5,  # Div1 X
+                       2.5,  # Div2 Y
+                       True)  # Small Boolean
 
         """For every box in input_boxes list"""
         # InputBox in List<InputBox>
@@ -120,7 +137,7 @@ class View:
             """Update the box"""
             box.update()  # InputBox.update()
             """Draw the box on the screen"""
-            box.draw(self.screen)  # #InputBox.draw(Surface)
+            self.draw_inputbox(box)  # (InputBox)
 
         """Draw Start button"""
         # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
@@ -128,7 +145,7 @@ class View:
                          self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),  # X Coordinate
                          self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),  # Y Coordinate
                          150,  # Width
-                         75,  # Heigth
+                         75,  # Height
                          self.col_green,  # Inactive color (R,G,B)
                          self.col_bright_green)  # Active color (R,G,B)
 
@@ -147,19 +164,22 @@ class View:
     def draw_trial(self, tiles,  # List<(Tile X, Tile Y)>
                    clickedseq):  # List<(Clicked Tile X, Clicked Tile Y)>
         """Draw instructions"""
-        self.draw_text("Click on the tiles in order of the shown sequence", 2.0, 1.05, True)
+        self.draw_text("Click on the tiles in order of the shown sequence",  # Text
+                       2.0,  # Div1 X
+                       1.05,  # Div2 Y
+                       True)  # Small Boolean
 
         """For each tile in tiles list do:"""
         # (Tile X, Tile Y) in List<(Tile X, Tile Y)>
         for tile in tiles:
             """Draw the tiles"""
-            self.draw_button(" ", #Text
-                             tile[0], # X Coordinate
-                             tile[1], # Y Coordinate
-                             self.TILE_SIZE[0], # Width
-                             self.TILE_SIZE[1], # Height
-                             self.col_darkblue, # Inactive color (R,G,B)
-                             self.col_bright_yellow) # Active color (R,G,B)
+            self.draw_button(" ",  # Text
+                             tile[0],  # X Coordinate
+                             tile[1],  # Y Coordinate
+                             self.TILE_SIZE[0],  # Width
+                             self.TILE_SIZE[1],  # Height
+                             self.col_darkblue,  # Inactive color (R,G,B)
+                             self.col_bright_yellow)  # Active color (R,G,B)
 
         """For each clicked tile in clickedseq list do:"""
         for click in clickedseq:
@@ -223,23 +243,34 @@ class View:
         """If player completed the sequence"""
         if correct:
             """Draw feedback text"""
-            
-            self.draw_text("You had the correct sequence of blocks", 2.0, 5, True)
-         
+
+            self.draw_text("You had the correct sequence of blocks",  # Text
+                           2.0,  # Div1 X
+                           5,  # Div2 Y
+                           True)  # Small Boolean
 
             """If player did not complete the sequence"""
         elif not correct:
             """Draw feedback text"""
-            self.draw_text("You had an incorrect sequence of blocks", 2.0, 5, True)
+            self.draw_text("You had an incorrect sequence of blocks",  # Text
+                           2.0,  # Div1 X
+                           5,  # Div2 Y
+                           True)  # Small Boolean
 
         """Draw completion time of the sequence"""
-        self.draw_text("Your completion time was: " + str(time) + " seconds", 2.0, 2.5, True)
+        self.draw_text("Your completion time was: " + str(time) + " seconds",  # Text
+                       2.0,  # Div1 X
+                       2.5,  # Div2 Y
+                       True)  # Small Boolean
 
         """If maximum amount of errors has been reached"""
         # Boolean == True
         if errors_reached:
             """Draw notification"""
-            self.draw_text("Maximum amount of errors reached", 2.0, 1.667, True)
+            self.draw_text("Maximum amount of errors reached",  # Text
+                           2.0,  # Div1 X
+                           1.667,  # Div2 Y
+                           True)  # Small Boolean
 
             """Draw quit button"""
             # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
@@ -277,10 +308,20 @@ class View:
 
     def draw_final(self, resultsRaw=[]):  # Dictionairy<Header,Result>
         """Draw WMC score"""
-        self.draw_text("You have a WMC of " + str(resultsRaw['Seq len'].max()), 2.0, 5, True)
+        self.draw_text("You have a WMC of " + str(resultsRaw['Seq len'].max()),  # Text
+                       2.0,  # Div1 X
+                       5,  # Div2 Y
+                       True)  # Small Boolean
 
         """Draw average completion time"""
+<<<<<<< HEAD
         self.draw_text("Your average completion time is " + str(resultsRaw['Trial time'].mean()) + " s", 2.0, 2.5, True)
+=======
+        self.draw_text("Your average completion time is " + str(resultsRaw['Trial time'].mean()) + " s",  # Text
+                       2.0,  # Div1 X
+                       2.5,  # Div2 Y
+                       True)  # Small Boolean
+>>>>>>> 23fa4dee3af7796d9f4519c18795fbe10c6748f3
 
         """Draw Results button"""
         # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN Game.py
@@ -410,7 +451,54 @@ class View:
                                  (y + (h / 2)))  # Center Y
         self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
 
+    """Draws text"""
+
+    def draw_text(self, text,  # Text
+                  div1,  # Div1 X
+                  div2,  # Div2 Y
+                  small):  # Small Boolean
+        """If text needs to be small"""
+        if small:
+            """Render text and store it as variable text_surface"""
+            text_surface = self.font_small.render(text,  # Text
+                                                  True,  # Antialias
+                                                  self.col_darkblue,  # Text color (R,G,B)
+                                                  self.BACKGR_COL)  # Background color (R.G.B)
+            """Get the rectangle around the text of text_surface and store it as varaible text_rectangle"""
+            text_rectangle = text_surface.get_rect()  # Rect
+            """Center the rectangle with text around x and y coordinates"""
+            text_rectangle.center = (self.SCREEN_SIZE[0] / div1,  # Center X
+                                     self.SCREEN_SIZE[1] / div2)  # Center Y
+            """Draw text on rectangle on screen"""
+            self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+            """If text does not have to be small"""
+        else:
+            """Render text and store it as variable text_surface"""
+            text_surface = self.font.render(text,  # Text
+                                            True,  # Antialias
+                                            self.col_darkblue,  # Text color (R,G,B)
+                                            self.BACKGR_COL)  # Background color (R.G.B)
+            """Get the rectangle around the text of text_surface and store it as varaible text_rectangle"""
+            text_rectangle = text_surface.get_rect()  # Rect
+            """Center the rectangle with text around x and y coordinates"""
+            text_rectangle.center = (self.SCREEN_SIZE[0] / div1,  # Center X
+                                     self.SCREEN_SIZE[1] / div2)  # Center Y
+            """Draw text on rectangle on screen"""
+            self.screen.blit(text_surface, text_rectangle)  # (Surface source, Rect area)
+
     """Clean screen by filling with BACKGR_COL"""
+
+    """Draw the InputBox on given Surface"""
+
+    def draw_inputbox(self, box):  # Surface
+        """Blit the text"""
+        self.screen.blit(box.txt_surface, (box.rect.x + 5, box.rect.y + 5))  # (Surface source, Rect area)
+
+        """Blit the rect"""
+        pygame.draw.rect(self.screen,  # Surface
+                         box.color,  # Color (R,G,B)
+                         box.rect,  # Rect(X,Y,W,H)
+                         2)  # Thickness edge
 
     def refreshSurface(self):
         self.screen.fill(self.BACKGR_COL)  # Color (R,G,B)
