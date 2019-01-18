@@ -2,10 +2,11 @@ from time import time
 
 import matplotlib
 import pygame
-import pylab
+
 
 matplotlib.use("Agg")
 
+import pylab
 import matplotlib.backends.backend_agg as agg
 from matplotlib.ticker import MaxNLocator
 

@@ -1,5 +1,6 @@
 import datetime
 import random
+import sys
 from time import time
 
 import sys
@@ -14,45 +15,48 @@ from View import View
 
 
 class Game:
-    """Initialize game settings"""
-    # TODO SET GAME PARAMETERS
-    SCREEN_SIZE = (800, 600)
-    SEQUENCE_LENGTH = 9
-    ALLOWED_ERRORS = 1
-
-    TILE_SIZE = (min(SCREEN_SIZE) / SEQUENCE_LENGTH - 1,
-                 min(SCREEN_SIZE) / SEQUENCE_LENGTH - 1)
-
-    """Initialize global variables"""
-    board = None
-    correct_seq = None
-    sequence = None
-    clickedseq = None
-    player_errors = 0
-    WMC = None
-    times = []
-    time_trial = None
-    time_start = None
-    resultsRaw = []
-    results = []
-
-    initials = None
-    age = 0
-    gender = None
-
-    startTime = None
-    endTime = None
-
-    """Global variables set up for boxinputboxes"""
-    inputID = InputBox(SCREEN_SIZE[0] * 4 / 7, SCREEN_SIZE[1] * 7 / 40, 200, 32)
-    inputAge = InputBox(SCREEN_SIZE[0] * 4 / 7, SCREEN_SIZE[1] * 11 / 40, 200, 32)
-    inputGender = InputBox(SCREEN_SIZE[0] * 4 / 7, SCREEN_SIZE[1] * 15 / 40, 200, 32)
-    input_boxes = [inputID, inputAge, inputGender]
-    spaceready = False
-
     """Initialise Game()"""
 
-    def __init__(self):
+    def __init__(self, SCREEN_SIZE=(1000, 800),  # (Width, Height) default=(1000,800)
+                 SEQUENCE_LENGTH=9,  # Integer default=9
+                 ALLOW_ERRORS=1):  # Integer default=1
+        """Initialize game settings"""
+        # TODO SET AS GAME PARAMETERS
+        self.SCREEN_SIZE = SCREEN_SIZE
+        self.SEQUENCE_LENGTH = SEQUENCE_LENGTH
+        self.ALLOWED_ERRORS = ALLOW_ERRORS
+
+        self.TILE_SIZE = (min(self.SCREEN_SIZE) / self.SEQUENCE_LENGTH - 1,
+                          min(self.SCREEN_SIZE) / self.SEQUENCE_LENGTH - 1)
+
+        """Global variables set up for boxinputboxes"""
+        self.inputID = InputBox(self.SCREEN_SIZE[0] * 4 / 7, self.SCREEN_SIZE[1] * 7 / 40, 200, 32)
+        self.inputAge = InputBox(self.SCREEN_SIZE[0] * 4 / 7, self.SCREEN_SIZE[1] * 11 / 40, 200, 32)
+        self.inputGender = InputBox(self.SCREEN_SIZE[0] * 4 / 7, self.SCREEN_SIZE[1] * 15 / 40, 200, 32)
+        self.input_boxes = [self.inputID, self.inputAge, self.inputGender]
+        self.spaceready = False
+
+        """Initialize global variables"""
+
+        self.board = None
+        self.correct_seq = None
+        self.sequence = None
+        self.clickedseq = None
+        self.player_errors = 0
+        self.WMC = None
+        self.times = []
+        self.time_trial = None
+        self.time_start = None
+        self.resultsRaw = []
+        self.results = []
+
+        self.initials = None
+        self.age = 0
+        self.gender = None
+
+        self.startTime = None
+        self.endTime = None
+
         """Create PyGame screen"""
         pygame.init()
         pygame.display.set_mode(self.SCREEN_SIZE)
@@ -61,6 +65,9 @@ class Game:
 
         """Initialise View.py to control the screen"""
         self.view = View(screen, self.SCREEN_SIZE, self.TILE_SIZE)
+
+        """Start main game loop"""
+        self.gameLoop()
 
     """Initialize Trial of length of current sequence"""
 
@@ -156,9 +163,7 @@ class Game:
             """"Close file"""
         f.close()
 
-
     """"Checks if input is given by the participant, before starting experiment"""
-
 
     def checkInputCompleted(self):
         """If the input in box Input ID contains only letters"""
@@ -181,9 +186,7 @@ class Game:
         """If all inputs are according their requirements, so only letters, digits or f/m, then this will return true, otherwise false"""
         return self.initials is not None and self.age != 0 and self.gender is not None
 
-
     """Main game loop to handle game logic"""
-
 
     def gameLoop(self):
         """Set STATE to welcome"""
@@ -315,28 +318,28 @@ class Game:
                         """Add time to list of trial times"""
                         self.times.append(self.time_trial)
 
-                    """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=True as dictonary to list ResultsRaw"""
-                    self.resultsRaw.append({
-                        'Initials': self.initials,
-                        'Age': self.age,
-                        'Gender': self.gender,
-                        'Start time': self.startTime,
-                        'Seq len': CURRENT_SEQUENCELENGTH,
-                        'Trial time': self.time_trial,
-                        'Completed': True
-                    })
+                        """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=True as dictonary to list ResultsRaw"""
+                        self.resultsRaw.append({
+                            'Initials': self.initials,
+                            'Age': self.age,
+                            'Gender': self.gender,
+                            'Start time': self.startTime,
+                            'Seq len': CURRENT_SEQUENCELENGTH,
+                            'Trial time': self.time_trial,
+                            'Completed': True
+                        })
 
-                    """Increase CURRENT_SEQUENCELENGTH by one for the next trial"""
-                    CURRENT_SEQUENCELENGTH += 1
+                        """Increase CURRENT_SEQUENCELENGTH by one for the next trial"""
+                        CURRENT_SEQUENCELENGTH += 1
 
-                    """Reset amount of player errors for the next trial"""
-                    self.player_errors = 0
+                        """Reset amount of player errors for the next trial"""
+                        self.player_errors = 0
 
-                    """Set STATE to feedback"""
-                    STATE = "feedback"
+                        """Set STATE to feedback"""
+                        STATE = "feedback"
 
-                    """Go to the next event in event list"""
-                    continue
+                        """Go to the next event in event list"""
+                        continue
 
             """If in feedback state"""
             if STATE == "feedback":
@@ -399,11 +402,12 @@ class Game:
                                        200, 100):
                     """"State becomes final"""
                     STATE = "final"
-                continue
+                    continue
 
             """If in final state"""
             if STATE == "final":
                 """If results button is pressed"""
+                # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
                 if self.button_pressed(self.SCREEN_SIZE[0] / 2 - (150 / 2),
                                        self.SCREEN_SIZE[1] * 3 / 5 - (100 / 2),
                                        200, 75, ):

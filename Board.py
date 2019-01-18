@@ -8,47 +8,50 @@ from pygame import Rect
 class Board:
     """Initalize board by provide list with tile coordinates and list of rectangles"""
 
-    def __init__(self, SCREEN_SIZE, SEQUENCE_LENGTH, TILE_SIZE):
+    def __init__(self, SCREEN_SIZE,  # (Screen Width, Screen Heigth)
+                 SEQUENCE_LENGTH,  # Int
+                 TILE_SIZE):  # (Tile Width, Tile Heigth)
         """Make a list for the tiles, which contains the x and y coordinates of tiles"""
-        self.tiles = list()
+        self.tiles = list()  # Empty List
 
         """Make a list for the rectangles, which contains the rectangle objects of tiles"""
-        self.rects = list()
+        self.rects = list()  # Empty List
 
         """While loop to ensure that the amount of rectangles is equal to the SEQUENCE_LENGTH"""
+        # While length of List doest not equal Int
         while len(self.tiles) != SEQUENCE_LENGTH:
             """Get random coordinates for a tile. Screensize is edited to allow for instructions at the bottom"""
-            tile = self.getRandomCoordinate((SCREEN_SIZE[0], SCREEN_SIZE[1] * 0.9), TILE_SIZE)
+            tile = self.getRandomCoordinate((SCREEN_SIZE[0], SCREEN_SIZE[1] * 0.9), TILE_SIZE)  # (Tile X, Tile Y)
 
             """The random coordinate of the tile is checked with the list of rectangles (other tiles) 
                 if there is no collision"""
-            if self.noCollision(tile, TILE_SIZE):
+            if self.noCollision(tile, TILE_SIZE):  # Boolean
                 """The tile does not have collision with tiles in rectangle list, so added to list tiles"""
-                self.tiles.append(tile)
+                self.tiles.append(tile)  # (Tile X, Tile Y)
 
                 """The tile does not have collision with tiles in rectangle list, so added to rectangle list"""
-                self.rects.append(Rect(tile[0], tile[1], TILE_SIZE[0], TILE_SIZE[1]))
+                self.rects.append(
+                    Rect(tile[0], tile[1], TILE_SIZE[0], TILE_SIZE[1]))  # Rect(Tile X, Tile Y, Tile Width, Tile Height)
 
     """Returns list of tiles"""
 
     def getCopy(self):
-        return self.tiles
+        return self.tiles # List<(Tile X, Tile Y)>
 
     """Returns random coordinates which are on the screen and have a tilesize length distance from the borders"""
 
-    def getRandomCoordinate(self, SCREEN_SIZE, TILE_SIZE):
-        """Gives a random x-coordinate for a tile,
-            within the range (1 + tile width) till (screen x max - 1 - tile width).
-            This to be able to display a tile as a whole"""
-        x = random.randint(1 + TILE_SIZE[0], SCREEN_SIZE[0] - 1 - TILE_SIZE[0])
+    def getRandomCoordinate(self, SCREEN_SIZE, # (Screen Width, Screen Heigth)
+                            TILE_SIZE): # (Tile Width, Tile Heigth)
+        """Gives a random x-coordinate for a tile"""
+        # Random value between 1 + Tile Width and Screen Width - 1 - Tile Width
+        x = random.randint(1 + TILE_SIZE[0], SCREEN_SIZE[0] - 1 - TILE_SIZE[0]) # Int
 
-        """Gives a random y-coordinate for a tile, 
-            within the range (1 + tile height) till (screen y max - 1 - tile height).
-            This to be able to display a tile as a whole"""
-        y = random.randint(1 + TILE_SIZE[1], SCREEN_SIZE[1] - 1 - TILE_SIZE[1])
+        """Gives a random y-coordinate for a tile"""
+        # Random value between 1 + Tile Height and Screen Height - 1 - Tile Height
+        y = random.randint(1 + TILE_SIZE[1], SCREEN_SIZE[1] - 1 - TILE_SIZE[1]) # Int
 
         """return random coordinates"""
-        return (x, y)
+        return (x, y) # (Tile X, Tile Y)
 
     """Returns boolean if tile (rectangle) collides with the other tiles in list"""
 
