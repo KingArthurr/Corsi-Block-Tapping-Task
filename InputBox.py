@@ -1,5 +1,7 @@
 import pygame
 
+""" Class to create and handle InputBoxes"""
+
 
 class InputBox:
 
