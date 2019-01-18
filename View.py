@@ -77,7 +77,7 @@ class View:
 
     """"""  # TODO comment
 
-    def draw_question(self, input_boxes):  # List<InputBoxes>
+    def draw_question(self, input_boxes):  # List<InputBoxes> 
         """Draw title"""
         text_surface = self.font.render("First some questions",  # Text
                                         True,  # Antialias

@@ -2,6 +2,7 @@ import datetime
 import random
 from time import time
 
+import sys
 import pandas
 import pygame
 
@@ -168,7 +169,7 @@ class Game:
         if self.inputAge.getValue().isdigit():
             """Set global variable age to the input given by participant"""
             self.age = int(self.inputAge.getValue())
-        """Ïf the input in box Input gender is f"""
+        """If the input in box Input gender is f"""
         if self.inputGender.getValue().lower() == 'f':
             """Set global variable gender to female"""
             self.gender = "female"
@@ -465,9 +466,9 @@ class Game:
                 self.view.draw_welcome()
 
             """If in Questions state"""
-            if STATE == "Questions":  # TODO fix
+            if STATE == "Questions":
                 """Tell View.py to draw Question screen"""
-                self.view.draw_question(self.input_boxes, self.spaceready)
+                self.view.draw_question(self.input_boxes)
 
             """If in trial state"""
             if STATE == "trial":
