@@ -3,7 +3,6 @@ import random
 import sys
 from time import time
 
-import sys
 import pandas
 import pygame
 
@@ -18,148 +17,195 @@ class Game:
     """Initialise Game()"""
 
     def __init__(self, SCREEN_SIZE=(1000, 800),  # (Width, Height) default=(1000,800)
-                 SEQUENCE_LENGTH=9,  # Integer default=9
-                 ALLOW_ERRORS=1):  # Integer default=1
+                 SEQUENCE_LENGTH=9,  # Max Sequence Length default=9
+                 ALLOW_ERRORS=1):  # Max Allowed Errors default=1
         """Initialize game settings"""
-        # TODO SET AS GAME PARAMETERS
-        self.SCREEN_SIZE = SCREEN_SIZE
-        self.SEQUENCE_LENGTH = SEQUENCE_LENGTH
-        self.ALLOWED_ERRORS = ALLOW_ERRORS
+        self.SCREEN_SIZE = SCREEN_SIZE  # (Width, Height)
+        self.SEQUENCE_LENGTH = SEQUENCE_LENGTH  # Max Sequence Length
+        self.ALLOWED_ERRORS = ALLOW_ERRORS  # Max Allowed Errors
 
-        self.TILE_SIZE = (min(self.SCREEN_SIZE) / self.SEQUENCE_LENGTH - 1,
-                          min(self.SCREEN_SIZE) / self.SEQUENCE_LENGTH - 1)
+        """Set Tile Size to Smallest ScreenSize(X,Y) / Maximum Sequence Lenght - 1"""
+        self.TILE_SIZE = (min(self.SCREEN_SIZE) / self.SEQUENCE_LENGTH - 1,  # Tile Width
+                          min(self.SCREEN_SIZE) / self.SEQUENCE_LENGTH - 1)  # Tile Height
 
         """Global variables set up for boxinputboxes"""
-        self.inputID = InputBox(self.SCREEN_SIZE[0] * 4 / 7, self.SCREEN_SIZE[1] * 7 / 40, 200, 32)
-        self.inputAge = InputBox(self.SCREEN_SIZE[0] * 4 / 7, self.SCREEN_SIZE[1] * 11 / 40, 200, 32)
-        self.inputGender = InputBox(self.SCREEN_SIZE[0] * 4 / 7, self.SCREEN_SIZE[1] * 15 / 40, 200, 32)
-        self.input_boxes = [self.inputID, self.inputAge, self.inputGender]
-        self.spaceready = False
+        # FIXME add inputboxes for every added question
+        # (self.input<Name> = InputBox(self.SCREEN_SIZE[0] * 4 / 7, self.SCREEN_SIZE[1] * <Int> / 40, 200, 32))
+        self.inputID = InputBox(self.SCREEN_SIZE[0] * 4 / 7,  # X Coordinate
+                                self.SCREEN_SIZE[1] * 7 / 40,  # Y Coordinate
+                                200,  # Width
+                                32)  # Height
+        self.inputAge = InputBox(self.SCREEN_SIZE[0] * 4 / 7,  # X Coordinate
+                                 self.SCREEN_SIZE[1] * 11 / 40,  # Y Coordinate
+                                 200,  # Width
+                                 32)  # Height
+        self.inputGender = InputBox(self.SCREEN_SIZE[0] * 4 / 7,  # X Coordinate
+                                    self.SCREEN_SIZE[1] * 15 / 40,  # Y Coordinate
+                                    200,  # Width
+                                    32)  # Height
+        # FIXME add extra inputboxes to list
+        # self.input<Name>
+        self.input_boxes = [self.inputID, self.inputAge, self.inputGender]  # List <InputBox>
+        self.spaceready = False  # Boolean
 
         """Initialize global variables"""
 
-        self.board = None
-        self.correct_seq = None
-        self.sequence = None
-        self.clickedseq = None
-        self.player_errors = 0
-        self.WMC = None
-        self.times = []
-        self.time_trial = None
-        self.time_start = None
-        self.resultsRaw = []
-        self.results = []
+        self.board = None  # Board
+        self.correct_seq = None  # Boolean
+        self.sequence = None  # List<(Tile X, Tile Y)>
+        self.clickedseq = None  # List<(Tile X, Tile Y)>
+        self.player_errors = 0  # Int
+        self.WMC = 0  # Int
+        self.times = []  # List<Float>
+        self.time_trial = None  # Float
+        self.time_start = None  # Float
+        self.resultsRaw = []  # Dictionairy<Header,Result>
+        self.results = []  # Dictionairy<Header,Result>
 
-        self.initials = None
-        self.age = 0
-        self.gender = None
+        self.initials = None  # Text
+        self.age = 0  # Int
+        self.gender = None  # Text
 
-        self.startTime = None
-        self.endTime = None
+        self.startTime = None  # Float
+        self.endTime = None  # Float
 
         """Create PyGame screen"""
+        """Initialize pygame"""
         pygame.init()
+        """Set display size to SCREEN_SIzE"""
         pygame.display.set_mode(self.SCREEN_SIZE)
+        """Set display caption to Corsi Block Tapping Task"""
         pygame.display.set_caption("Corsi Block Tapping Task")
-        screen = pygame.display.get_surface()
+        """Get display Surface"""
+        screen = pygame.display.get_surface()  # Surface
 
         """Initialise View.py to control the screen"""
-        self.view = View(screen, self.SCREEN_SIZE, self.TILE_SIZE)
+        self.view = View(screen,  # Surface
+                         self.SCREEN_SIZE,  # (Screen Width, Screen Height)
+                         self.TILE_SIZE)  # (Tile Width, Tile Height)
 
         """Start main game loop"""
         self.gameLoop()
 
     """Initialize Trial of length of current sequence"""
 
-    def initializeTrial(self, CURRENT_SEQUENCELENGTH):
+    def initializeTrial(self, CURRENT_SEQUENCELENGTH):  # Int
         """"Clean clickedseq by assigning new clean list()"""
-        self.clickedseq = list()
+        self.clickedseq = list()  # List<(Tile X, Tile Y)>
 
         """Clean board by creating new Board()"""
-        self.board = Board(self.SCREEN_SIZE, self.SEQUENCE_LENGTH, self.TILE_SIZE)
+        self.board = Board(self.SCREEN_SIZE,  # (Screen Width, Screen Heigth)
+                           self.SEQUENCE_LENGTH,  # Int
+                           self.TILE_SIZE)  # (Tile Width, Tile Heigth)
 
         """Create a new sequence of length of current sequence"""
-        self.createSequence(CURRENT_SEQUENCELENGTH)
+        self.createSequence(CURRENT_SEQUENCELENGTH)  # Int
 
         """Tell View.py to draw the trial and show the sequence"""
-        self.view.draw_trial(self.board.getCopy(), self.clickedseq)
-        self.view.draw_sequence(self.getSequence())
+        self.view.draw_trial(self.board.getCopy(), self.clickedseq)  # (Board, # List<(Tile X, Tile Y)>)
+        self.view.draw_sequence(self.getSequence())  # (List<(Tile X, Tile Y)>)
 
         """Set correct_seq to False to indicate player has not yet entered the correct sequence"""
-        self.correct_seq = False
+        self.correct_seq = False  # Boolean
 
     """Create a sequence of length of given variable CURRENT_SEQUENCELENGTH"""
 
-    def createSequence(self, CURRENT_SEQUENCELENGTH):
+    def createSequence(self, CURRENT_SEQUENCELENGTH):  # Int
         """Get copy of the tiles in the board from Board.py"""
-        tiles = self.board.getCopy()
+        tiles = self.board.getCopy()  # List<(Tile X, Tile Y)>
 
         """Shuffle them to always select a random tile"""
-        random.shuffle(tiles)
+        random.shuffle(tiles)  # Random(List<(Tile X, Tile Y)>)
 
         """Clean sequence by assigning new clean list()"""
-        self.sequence = list()
+        self.sequence = list()  # List<(Tile X, Tile Y)>
 
         """Add CURRENT_SEQUENCELENGTH amount of tiles from randomized tiles list to sequence"""
+        # For every number from 0 to CURRENT_SEQUENCELENGTH
         for j in range(CURRENT_SEQUENCELENGTH):
-            self.sequence.append(tiles[j])
+            self.sequence.append(tiles[j])  # (Tile X, Tile Y)
 
     """Getter method that returns sequence list"""
 
     def getSequence(self):
-        return self.sequence
+        return self.sequence  # List<(Tile X, Tile Y)>
 
     """Check if button on location (x,y) with width w and height h is pressed"""
 
-    def button_pressed(self, x, y, w, h):
+    def button_pressed(self, x,  # X Coordinate
+                       y,  # Y Coordinate
+                       w,  # Width
+                       h):  # Heigth
         """Create clicked boolean and set to False"""
-        clicked = False
+        clicked = False  # Boolean
 
         """Get mouse pointer position and pressed mouse buttons"""
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
+        mouse = pygame.mouse.get_pos()  # (Mouse X, Mouse Y)
+        click = pygame.mouse.get_pressed()  # (Mouse left bit, Mouse middle bit, Mouse right bit)
 
         """Check if the mouse cursor is on the button"""
+        # If X Coordinate + Width > Mouse X > X Coordinate and Y Coordinate + Height > Mouse Y > Y Coordinate
         if x + w > mouse[0] > x and y + h > mouse[1] > y:
             """Check if left mouse button had been pressed"""
+            # If Mouse left bit equals 1
             if click[0] == 1:
                 """If so, set clicked to True"""
-                clicked = True
+                clicked = True  # Boolean
 
-        return clicked
+        return clicked  # Boolean
 
     """Save the results of the Game to CSV files"""
 
     def saveResults(self):
         """Creates name for file including the results (averages)"""
-        fileraw = "CorsiBlockTapping_results.csv"
+        fileraw = "CorsiBlockTapping_results.csv"  # Filename String
         """creates data frame of results (averages)"""
-        df = pandas.DataFrame(self.results)
+        df = pandas.DataFrame(self.results)  # DataFrame(Dictionairy<Header,Result>)
         """Opens the CSV file and store it as variable f"""
-        f = open(fileraw, "a")
+        f = open(fileraw, "a")  # File(String, append)
         """If the file is empty"""
+        # If the read/write pointer position equals 0
         if f.tell() == 0:
             """Store the data including the headers"""
-            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, mode='a')
+            df.to_csv(fileraw,  # Filename String
+                      sep=',',  # Saperator String
+                      encoding='utf-8',  # Encoding String
+                      index=False,  # Index Boolean
+                      mode='a')  # Mode append
         else:
             """Else: store the data without the headers"""
-            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, header=False, mode='a')
+            df.to_csv(fileraw,  # Filename String
+                      sep=',',  # Saperator String
+                      encoding='utf-8',  # Encoding String
+                      index=False,  # Index Boolean
+                      header=False,  # Header Boolean
+                      mode='a')  # Mode append
         """"Close file"""
         f.close()
 
         """Creates name for file including the raw_results"""
-        fileraw = "CorsiBlockTapping_raw.csv"
+        fileraw = "CorsiBlockTapping_raw.csv"  # Filename String
         """Creates data frame of raw_results"""
-        df = pandas.DataFrame(self.resultsRaw)
+        df = pandas.DataFrame(self.resultsRaw)  # DataFrame(Dictionairy<Header,Result>)
         """Opens the CSV file and store it as variable f"""
-        f = open(fileraw, "a")
+        f = open(fileraw, "a")  # File(String, append)
         """If the file is empty"""
+        # If the read/write pointer position equals 0
         if f.tell() == 0:
             """Store the data including the headers"""
-            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, mode='a')
+            df.to_csv(fileraw,  # Filename String
+                      sep=',',  # Separator String
+                      encoding='utf-8',  # Encoding String
+                      index=False,  # Index Boolean
+                      mode='a')  # Mode append
         else:
             """Else: store the data without the headers"""
-            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, header=False, mode='a')
+            df.to_csv(fileraw,  # Filename String
+                      sep=',',  # Separator String
+                      encoding='utf-8',  # Encoding String
+                      index=False,  # Index Boolean
+                      header=False,  # Header Boolean
+                      mode='a')  # Mode append
             """"Close file"""
         f.close()
 
@@ -167,33 +213,33 @@ class Game:
 
     def checkInputCompleted(self):
         """If the input in box Input ID contains only letters"""
-        if self.inputID.getValue().isalpha():
+        if self.inputID.getValue().isalpha():  # Boolean
             """Set global variable initials to the input given by participant"""
-            self.initials = self.inputID.getValue()
+            self.initials = self.inputID.getValue()  # String
         """If the input in box Input Age contains only digits"""
-        if self.inputAge.getValue().isdigit():
+        if self.inputAge.getValue().isdigit():  # Boolean
             """Set global variable age to the input given by participant"""
-            self.age = int(self.inputAge.getValue())
+            self.age = int(self.inputAge.getValue())  # Int
         """If the input in box Input gender is f"""
-        if self.inputGender.getValue().lower() == 'f':
+        if self.inputGender.getValue().lower() == 'f':  # Boolean
             """Set global variable gender to female"""
-            self.gender = "female"
+            self.gender = "female"  # String
         """If the input in box Input Gender is m"""
-        if self.inputGender.getValue().lower() == 'm':
+        if self.inputGender.getValue().lower() == 'm':  # Boolean
             """Set global varialbe gender to male"""
-            self.gender = "male"
+            self.gender = "male"  # String
 
         """If all inputs are according their requirements, so only letters, digits or f/m, then this will return true, otherwise false"""
-        return self.initials is not None and self.age != 0 and self.gender is not None
+        return self.initials is not None and self.age != 0 and self.gender is not None  # Boolean
 
     """Main game loop to handle game logic"""
 
     def gameLoop(self):
         """Set STATE to welcome"""
-        STATE = "welcome"
+        STATE = "welcome"  # String
 
         """ Set CURRENT_SEQUENCELENGTH to 2"""
-        CURRENT_SEQUENCELENGTH = 2
+        CURRENT_SEQUENCELENGTH = 2  # Int
 
         """Start main game loop"""
         while True:
@@ -207,139 +253,150 @@ class Game:
                 """Transitionals"""
 
                 """If in welcome state"""
-                if STATE == "welcome":
+                if STATE == "welcome":  # String
                     """If start trial button is pressed"""
                     # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
-                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),
-                                           self.SCREEN_SIZE[1] * 3 / 5 - (75 / 2),
-                                           150, 75):
+                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),  # X Coordinate
+                                           self.SCREEN_SIZE[1] * 3 / 5 - (75 / 2),  # Y Coordinate
+                                           150,  # Width
+                                           75):  # Heigth
                         """Set STATE to trial"""
-                        STATE = "Questions"
+                        STATE = "Questions"  # String
 
                         """Go to next event in event list"""
                         continue
 
                     """If quit button is pressed"""
                     # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
-                    if self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),
-                                           self.SCREEN_SIZE[1] * 3 / 5 - (75 / 2),
-                                           150, 75):
+                    if self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),  # X Coordinate
+                                           self.SCREEN_SIZE[1] * 3 / 5 - (75 / 2),  # Y Coordinate
+                                           150,  # Width
+                                           75):  # Heigth
                         """Set STATE to quit"""
-                        STATE = "quit"
+                        STATE = "quit"  # String
 
                         """Go to next event in event list"""
                         continue
                 """If Questions state"""
                 if STATE == "Questions":
                     """For every box in inputboxes do:"""
+                    # For every InputBox in List<InputBox>
                     for box in self.input_boxes:
                         """Handle the event for this box, so provide when clicked to light up, or when backspace delete character and when keypress add character"""
-                        box.handle_event(event)
+                        box.handle_event(event)  # (Event)
                         """"Store the returned boolean. If input is according requirements: yes or no"""
-                        spaceready = self.checkInputCompleted()
+                        spaceready = self.checkInputCompleted()  # Boolean
 
                     """If button is pressed and the input is according requirements"""
                     # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
-                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),
-                                           self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
-                                           150, 75) \
-                            and spaceready:
+                    if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),  # X Coordinate
+                                           self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),  # Y Coordinate
+                                           150,  # Width \ Height
+                                           75) \
+                            and spaceready:  # Boolean
                         """Initialize new trial with CURRENT_SEQUENCELENGTH"""
-                        self.initializeTrial(CURRENT_SEQUENCELENGTH)
+                    self.initializeTrial(CURRENT_SEQUENCELENGTH)  # (Int)
 
-                        """Set starttime of experiment to current time"""
-                        self.startTime = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S')
-                        """Set starttime of current trial to current time"""
-                        self.time_start = time()
-                        STATE = "trial"
-                        continue
+                    """Set starttime of experiment to current time"""
+                    self.startTime = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S')  # Datetime
 
-                    """If quit button is pressed"""
-                    # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
-                    if self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),
-                                           self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
-                                           150, 75):
-                        """Set STATE to quit"""
-                        STATE = "quit"
+                    """"Set starttime of current trial to current time"""
+                    self.time_start = time()  # Float
 
-                        """Go to next event in event list"""
-                        continue
+                    """Set STATE to trial"""
+                    STATE = "trial"  # String
+                    continue
 
-                """If in trial state"""
-                if STATE == "trial":
-                    """If left mouse button is pressed"""
-                    if pygame.mouse.get_pressed()[0] == 1:
-                        """Get tile that has been clicked from Board.py"""
-                        clickedRect = self.board.checkMouseClick(pygame.mouse.get_pos())
+                """If quit button is pressed"""
+                # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
+                if self.button_pressed(self.SCREEN_SIZE[0] * 2 / 3 - (150 / 2),  # X Coordinate
+                                       self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),  # Y Coordinate
+                                       150,  # Width
+                                       75):  # Heigth
+                    """Set STATE to quit"""
+                    STATE = "quit"  # String
 
-                        """If a tile has been clicked"""
-                        if clickedRect is not None:
-                            """If clicked tile was supposed to be clicked"""
-                            if (clickedRect.left, clickedRect.top) == self.sequence[len(self.clickedseq)]:
-                                """Add tile to clickedseq list"""
-                                self.clickedseq.append((clickedRect.left, clickedRect.top))
+                    """Go to next event in event list"""
+                    continue
 
-                                """If clicked tile was not supposed to be clicked"""
-                            else:
-                                """Calculate time used to complete this trial"""
-                                self.time_trial = time() - self.time_start
+            """If in trial state"""
+            if STATE == "trial":
+                """If left mouse button is pressed"""
+                # If Mouse left bit equals 1
+                if pygame.mouse.get_pressed()[0] == 1:
+                    """Get tile that has been clicked from Board.py"""
+                    clickedRect = self.board.checkMouseClick(pygame.mouse.get_pos())  # Rect ((Mouse X, Mouse Y))
 
-                                """Add time to list of trial times"""
-                                self.times.append(self.time_trial)
+                    """If a tile has been clicked"""
+                    if clickedRect is not None:
+                        """If clicked tile was supposed to be clicked"""
+                        # If Rect X, Rect Y equals current(Tile X, Tile Y) from List<(Tile X, Tile Y)>
+                        if (clickedRect.left, clickedRect.top) == self.sequence[len(self.clickedseq)]:
+                            """Add tile to clickedseq list"""
+                            self.clickedseq.append((clickedRect.left, clickedRect.top))  # (Rect X, Rect Y)
 
-                                """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=False as dictonary to list ResultsRaw"""
-                                self.resultsRaw.append({
-                                    'Initials': self.initials,
-                                    'Age': self.age,
-                                    'Gender': self.gender,
-                                    'Start time': self.startTime,
-                                    'Seq len': CURRENT_SEQUENCELENGTH,
-                                    'Trial time': self.time_trial,
-                                    'Completed': False
-                                })
+                            """If clicked tile was not supposed to be clicked"""
+                        else:
+                            """Calculate time used to complete this trial"""
+                            self.time_trial = time() - self.time_start # Float
 
-                                """Add 1 to amount of errors made"""
-                                self.player_errors += 1
+                            """Add time to list of trial times"""
+                            self.times.append(self.time_trial) # Float
 
-                                """Set STATE to feedback"""
-                                STATE = "feedback"
+                            """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=False as dictonary to list ResultsRaw"""
+                            self.resultsRaw.append({
+                                'Initials': self.initials, # String
+                                'Age': self.age,    # Int
+                                'Gender': self.gender,  # String
+                                'Start time': self.startTime, # Datetime
+                                'Seq len': CURRENT_SEQUENCELENGTH, # Int
+                                'Trial time': self.time_trial, # Float
+                                'Completed': False # Boolean
+                            })
 
-                                """Go to next event in event list"""
-                                continue
+                            """Add 1 to amount of errors made"""
+                            self.player_errors += 1 # Int
 
-                    """If the sequence that has been clicked is the same as the trial sequence"""
-                    if self.clickedseq == self.sequence:
-                        """Set correct_seq to True to indicate the player had entered the correct sequence"""
-                        self.correct_seq = True
+                            """Set STATE to feedback"""
+                            STATE = "feedback" # String
 
-                        """Calculate time used to complete this trial"""
-                        self.time_trial = time() - self.time_start
+                            """Go to next event in event list"""
+                            continue
 
-                        """Add time to list of trial times"""
-                        self.times.append(self.time_trial)
+                """If the sequence that has been clicked is the same as the trial sequence"""
+                # If List<(Tile X, Tile Y)> equals List<(Tile X, Tile Y)>
+                if self.clickedseq == self.sequence:
+                    """Set correct_seq to True to indicate the player had entered the correct sequence"""
+                    self.correct_seq = True
 
-                        """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=True as dictonary to list ResultsRaw"""
-                        self.resultsRaw.append({
-                            'Initials': self.initials,
-                            'Age': self.age,
-                            'Gender': self.gender,
-                            'Start time': self.startTime,
-                            'Seq len': CURRENT_SEQUENCELENGTH,
-                            'Trial time': self.time_trial,
-                            'Completed': True
-                        })
+                    """Calculate time used to complete this trial"""
+                    self.time_trial = time() - self.time_start
 
-                        """Increase CURRENT_SEQUENCELENGTH by one for the next trial"""
-                        CURRENT_SEQUENCELENGTH += 1
+                    """Add time to list of trial times"""
+                    self.times.append(self.time_trial)
 
-                        """Reset amount of player errors for the next trial"""
-                        self.player_errors = 0
+                    """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=True as dictonary to list ResultsRaw"""
+                    self.resultsRaw.append({
+                        'Initials': self.initials,
+                        'Age': self.age,
+                        'Gender': self.gender,
+                        'Start time': self.startTime,
+                        'Seq len': CURRENT_SEQUENCELENGTH,
+                        'Trial time': self.time_trial,
+                        'Completed': True
+                    })
 
-                        """Set STATE to feedback"""
-                        STATE = "feedback"
+                    """Increase CURRENT_SEQUENCELENGTH by one for the next trial"""
+                    CURRENT_SEQUENCELENGTH += 1
 
-                        """Go to the next event in event list"""
-                        continue
+                    """Reset amount of player errors for the next trial"""
+                    self.player_errors = 0
+
+                    """Set STATE to feedback"""
+                    STATE = "feedback"
+
+                    """Go to the next event in event list"""
+                    continue
 
             """If in feedback state"""
             if STATE == "feedback":
@@ -347,7 +404,8 @@ class Game:
                 # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
                 if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),
                                        self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
-                                       150, 75) \
+                                       150,
+                                       75) \
                         and self.player_errors <= self.ALLOWED_ERRORS:
 
                     """If not all trials have been completed"""
@@ -460,50 +518,50 @@ class Game:
                     """Go to the next event in event list"""
                     continue
 
-            """End of for loop"""
+        """End of for loop"""
 
-            """Presentitionals"""
+        """Presentitionals"""
 
-            """If in welcome state"""
-            if STATE == "welcome":
-                """Tell View.py to draw the welcome screen"""
-                self.view.draw_welcome()
+        """If in welcome state"""
+        if STATE == "welcome":
+            """Tell View.py to draw the welcome screen"""
+            self.view.draw_welcome()
 
-            """If in Questions state"""
-            if STATE == "Questions":
-                """Tell View.py to draw Question screen"""
-                self.view.draw_question(self.input_boxes)
+        """If in Questions state"""
+        if STATE == "Questions":
+            """Tell View.py to draw Question screen"""
+            self.view.draw_question(self.input_boxes)
 
-            """If in trial state"""
-            if STATE == "trial":
-                """Tell View.py to draw the trial with current board from Board.py and clicked sequence"""
-                self.view.draw_trial(self.board.getCopy(), self.clickedseq)
+        """If in trial state"""
+        if STATE == "trial":
+            """Tell View.py to draw the trial with current board from Board.py and clicked sequence"""
+            self.view.draw_trial(self.board.getCopy(), self.clickedseq)
 
-            """If in feedback state"""
-            if STATE == "feedback":
-                """Tell View.py to draw the feedback screen with trial time and if clicked sequence was correct"""
-                self.view.draw_feedback(self.time_trial, self.correct_seq, self.player_errors > self.ALLOWED_ERRORS)
+        """If in feedback state"""
+        if STATE == "feedback":
+            """Tell View.py to draw the feedback screen with trial time and if clicked sequence was correct"""
+            self.view.draw_feedback(self.time_trial, self.correct_seq, self.player_errors > self.ALLOWED_ERRORS)
 
-            """If in final state"""
-            if STATE == "final":
-                """Tell View.py to draw the final screen with WMC and average trial time"""
-                self.view.draw_final(pandas.DataFrame(self.resultsRaw))
+        """If in final state"""
+        if STATE == "final":
+            """Tell View.py to draw the final screen with WMC and average trial time"""
+            self.view.draw_final(pandas.DataFrame(self.resultsRaw))
 
-            """If in results state"""
-            if STATE == "results":
-                """Tell View.py to draw the results"""
-                self.view.draw_results(pandas.DataFrame(self.resultsRaw))
+        """If in results state"""
+        if STATE == "results":
+            """Tell View.py to draw the results"""
+            self.view.draw_results(pandas.DataFrame(self.resultsRaw))
 
-            """If in quite state"""
-            if STATE == "quit":
-                """Close screen"""
-                pygame.display.quit()
+        """If in quite state"""
+        if STATE == "quit":
+            """Close screen"""
+            pygame.display.quit()
 
-                """Exit pygame"""
-                pygame.quit()
+            """Exit pygame"""
+            pygame.quit()
 
-                """Exit programm"""
-                sys.exit()
+            """Exit programm"""
+            sys.exit()
 
-            """Update pygame display"""
-            self.view.updateDisplay()
+        """Update pygame display"""
+        self.view.updateDisplay()
