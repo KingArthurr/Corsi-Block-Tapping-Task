@@ -1,2 +1,15 @@
 Age	Completed	Gender	Initials	Seq len	Start time	Trial time
 21	True	female	RK	2	18-01-2019 11:13:35	3.6387710571289062
+Age	Completed	Gender	Initials	Seq len	Start time	Trial time
+20	False	female	DR	2	18-01-2019 11:18:31	5.562999963760376
+20	False	female	DR	2	18-01-2019 11:18:31	10.312000036239624
+Age	Completed	Gender	Initials	Seq len	Start time	Trial time
+20	False	female	DR	2	18-01-2019 11:21:18	5.480000019073486
+20	False	female	DR	2	18-01-2019 11:21:18	4.932000160217285
+Age,Completed,Gender,Initials,Seq len,Start time,Trial time
+20,False,female,DR,2,18-01-2019 11:59:52,3.00600004196167
+20,True,female,DR,2,18-01-2019 11:59:52,13.233000040054321
+20,True,female,DR,3,18-01-2019 11:59:52,1.8440001010894775
+20,True,female,DR,4,18-01-2019 11:59:52,2.7230000495910645
+20,True,female,DR,5,18-01-2019 11:59:52,6.248999834060669
+20,False,female,DR,6,18-01-2019 11:59:52,3.4679999351501465

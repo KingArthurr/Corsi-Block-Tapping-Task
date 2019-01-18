@@ -18,7 +18,7 @@ from View import View
 class Game:
     """Initialize game settings"""
     # TODO SET GAME PARAMETERS
-    SCREEN_SIZE = (1000, 800)
+    SCREEN_SIZE = (800, 600)
     SEQUENCE_LENGTH = 9
     ALLOWED_ERRORS = 1
 
@@ -45,7 +45,7 @@ class Game:
     startTime = None
     endTime = None
 
-    # Setup input boxes TODO comment
+    """Global variables set up for boxinputboxes"""
     inputID = InputBox(SCREEN_SIZE[0] * 4 / 7, SCREEN_SIZE[1] * 7 / 40, 200, 32)
     inputAge = InputBox(SCREEN_SIZE[0] * 4 / 7, SCREEN_SIZE[1] * 11 / 40, 200, 32)
     inputGender = InputBox(SCREEN_SIZE[0] * 4 / 7, SCREEN_SIZE[1] * 15 / 40, 200, 32)
@@ -123,38 +123,60 @@ class Game:
 
         return clicked
 
-    """Save the results of the Game to CSV file"""
-    # TODO IMRPOVE
+    """Save the results of the Game to CSV files"""
     def saveResults(self):
+        """Creates name for file including the results (averages)"""
         fileraw = "CorsiBlockTapping_results.csv"
+        """creates data frame of results (averages)"""
         df = pandas.DataFrame(self.results)
+        """Opens the CSV file and store it as variable f"""
         f = open(fileraw, "a")
+        """If the file is empty"""
         if f.tell() == 0:
-            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, mode='a')
+            """Store the data including the headers"""
+            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, mode='a')
         else:
-            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, header=False, mode='a')
+            """Else: store the data without the headers"""
+            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, header=False, mode='a')
+        """"Close file"""
         f.close()
-
+        
+        """Creates name for file including the raw_results"""
         fileraw = "CorsiBlockTapping_raw.csv"
+        """Creates data frame of raw_results"""
         df = pandas.DataFrame(self.resultsRaw)
+        """Opens the CSV file and store it as variable f"""
         f = open(fileraw, "a")
+        """If the file is empty"""
         if f.tell() == 0:
-            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, mode='a')
+             """Store the data including the headers"""
+            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, mode='a')
         else:
-            df.to_csv(fileraw, sep='\t', encoding='utf-8', index=False, header=False, mode='a')
+            """Else: store the data without the headers"""
+            df.to_csv(fileraw, sep=',', encoding='utf-8', index=False, header=False, mode='a')
+         """"Close file"""
         f.close()
-
-    def checkInputCompleted(self):  # TODO fix
+        
+    """"Checks if input is given by the participant, before starting experiment"""
+    def checkInputCompleted(self):
+        """If the input in box Input ID contains only letters"""
         if self.inputID.getValue().isalpha():
+            """Set global variable initials to the input given by participant"""
             self.initials = self.inputID.getValue()
+        """If the input in box Input Age contains only digits"""
         if self.inputAge.getValue().isdigit():
+            """Set global variable age to the input given by participant"""
             self.age = int(self.inputAge.getValue())
+        """Ïf the input in box Input gender is f"""
         if self.inputGender.getValue().lower() == 'f':
+            """Set global variable gender to female"""
             self.gender = "female"
+        """If the input in box Input Gender is m"""
         if self.inputGender.getValue().lower() == 'm':
+            """Set global varialbe gender to male"""
             self.gender = "male"
 
-        # return True
+        """If all inputs are according their requirements, so only letters, digits or f/m, then this will return true, otherwise false"""
         return self.initials is not None and self.age != 0 and self.gender is not None
 
     """Main game loop to handle game logic"""
@@ -200,13 +222,16 @@ class Game:
 
                         """Go to next event in event list"""
                         continue
-
-                if STATE == "Questions":  # TODO fix & comment
+                """If Questions state"""                    
+                if STATE == "Questions":
+                    """For every box in inputboxes do:"""
                     for box in self.input_boxes:
+                        """Handle the event for this box, so provide when clicked to light up, or when backspace delete character and when keypress add character"""
                         box.handle_event(event)
+                        """"Store the returned boolean. If input is according requirements: yes or no"""
                         spaceready = self.checkInputCompleted()
 
-                    # is the spacebar pressed?
+                    """If button is pressed and the input is according requirements"""
                     # FIXME BUTTON POSITIONS HARDCODED, ALSO ADD CHANGES IN View.py
                     if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 3 - (150 / 2),
                                            self.SCREEN_SIZE[1] * 4 / 5 - (75 / 2),
@@ -255,7 +280,7 @@ class Game:
                                 """Add time to list of trial times"""
                                 self.times.append(self.time_trial)
 
-                                """Add 2-tuple of WMC and trial time to seqLength_Times_List"""  # TODO commenting
+                                """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=False as dictonary to list ResultsRaw""" 
                                 self.resultsRaw.append({
                                     'Initials': self.initials,
                                     'Age': self.age,
@@ -286,7 +311,7 @@ class Game:
                         """Add time to list of trial times"""
                         self.times.append(self.time_trial)
 
-                        """Add 2-tuple of WMC and trial time to seqLength_Times_List"""  # TODO commenting
+                       """Add Initials, Age, Gender, Start time, Seq len, trial time and completed=True as dictonary to list ResultsRaw""" 
                         self.resultsRaw.append({
                             'Initials': self.initials,
                             'Age': self.age,
@@ -365,9 +390,11 @@ class Game:
 
                 """If in result state"""
                 if STATE == "results":
+                    """If quit button is pressed"""
                     if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (150 / 2),
                                            self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2),
                                            200, 100):
+                        """"State becomes final"""
                         STATE = "final"
                     continue
 
@@ -378,6 +405,7 @@ class Game:
                                            self.SCREEN_SIZE[1] * 3 / 5 - (100 / 2),
                                            200, 75, ):
                         STATE = "results"
+                        """Go to the next event in event list"""
                         continue
 
                     """If quit button is pressed"""
@@ -385,11 +413,16 @@ class Game:
                     if self.button_pressed(self.SCREEN_SIZE[0] * 1 / 2 - (150 / 2),
                                            self.SCREEN_SIZE[1] * 3 / 4 - (100 / 2),
                                            200, 100):
-                        """"""  # TODO commenting
+                        """Create panda dataframe of resultsRaw and store it in variable df"""
                         df = pandas.DataFrame(self.resultsRaw)
+                        """Check if all values in dataframe are completed"""
                         df = df[df.Completed != False]
+                        """Pick the largest completed sequence length, so that is the WMC of the participant"""
                         wmc = df['Seq len'].max()
+                        """Calculate the average time of the trials and store it as avgtime"""
                         avgtime = df["Trial time"].mean()
+                        
+                       """Add Initials, Age, Gender, Start time,End time, WMC and Average trial time as dictonary to list results (averages)""" 
                         self.results.append({
                             'Initials': self.initials,
                             'Age': self.age,
@@ -425,9 +458,10 @@ class Game:
             if STATE == "welcome":
                 """Tell View.py to draw the welcome screen"""
                 self.view.draw_welcome()
-
+            
+            """If in Questions state"""
             if STATE == "Questions":  # TODO fix
-                # draw the welcome message (scroll down for the function)
+                """Tell View.py to draw Question screen"""
                 self.view.draw_question(self.input_boxes, self.spaceready)
 
             """If in trial state"""
@@ -445,8 +479,9 @@ class Game:
                 """Tell View.py to draw the final screen with WMC and average trial time"""
                 self.view.draw_final(pandas.DataFrame(self.resultsRaw))
 
-            """"""  # TODO comment
+            """If in results state"""
             if STATE == "results":
+                """Tell View.py to draw the results"""
                 self.view.draw_results(pandas.DataFrame(self.resultsRaw))
 
             """If in quite state"""
