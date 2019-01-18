@@ -13,3 +13,7 @@ Age,Completed,Gender,Initials,Seq len,Start time,Trial time
 20,False,female,DR,4,18-01-2019 14:42:39,0.5480000972747803
 Age,Completed,Gender,Initials,Seq len,Start time,Trial time
 20,False,female,DR,2,18-01-2019 14:56:18,7.3440001010894775
+Age,Completed,Gender,Initials,Seq len,Start time,Trial time
+20,True,female,DR,2,18-01-2019 15:42:35,1.6419999599456787
+20,True,female,DR,3,18-01-2019 15:42:35,2.7790000438690186
+20,True,female,DR,4,18-01-2019 15:42:35,2.9700000286102295
