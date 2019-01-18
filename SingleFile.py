@@ -336,7 +336,6 @@ class Game:
                     if pygame.mouse.get_pressed()[0] == 1:
                         """Get tile that has been clicked from Board.py"""
                         clickedRect = self.board.checkMouseClick(pygame.mouse.get_pos())  # Rect ((Mouse X, Mouse Y))
-
                         """If a tile has been clicked"""
                         if clickedRect is not None:
                             """If clicked tile was supposed to be clicked"""
@@ -346,6 +345,8 @@ class Game:
                                 self.clickedseq.append((clickedRect.left, clickedRect.top))  # (Rect X, Rect Y)
 
                                 """If clicked tile was not supposed to be clicked"""
+                            elif (clickedRect.left, clickedRect.top) in self.clickedseq:
+                                pass
                             else:
                                 """Calculate time used to complete this trial"""
                                 self.time_trial = time() - self.time_start  # Float

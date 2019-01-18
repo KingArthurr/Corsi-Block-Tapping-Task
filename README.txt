@@ -1,5 +1,7 @@
 README file (Reinier de Ridder en Daphne Rietvelt):
 
+To run the program, run SingleFile.py or OOFiles/Corsi.py
+
 We didn't used any additional libraries. 
 Since it's a large program, Spyder may have troubles with running this properly. 
 Our advise is to use Anaconda2 in combination with PyCharm. 
